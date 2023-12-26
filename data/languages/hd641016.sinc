@@ -5,7 +5,7 @@ define space ram type=ram_space size=4 wordsize=1 default;
 define space register type=register_space size=4;
 
 define register offset=0 size=4
-[r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15];
+[R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15];
 define register offset=0x100 size=4 [pc ssp bsp ebr rbr ibr cbnr sr ccr bmr gbnr vbnr];
 
 # 8 – token size
@@ -46,8 +46,8 @@ define token data32 (32)
 ;
 
 attach variables [ Rn Rnd Rns ] [
-	r0  r1  r2  r3  r4  r5  r6  r7
-	r8  r9 r10 r11 r12  r13  r14  r15
+	R0  R1  R2  R3  R4  R5  R6  R7
+	R8  R9 R10 R11 R12  R13  R14  R15
 ];
 
 disp8: rel is simm8 [ rel = inst_next + simm8; ] {
@@ -60,9 +60,9 @@ disp32: rel is simm32 [ rel = inst_next + simm32; ] {
     export *:4 rel;
 }
 
-Sz: ".b" is sz=0b00 { }
-Sz: ".w" is sz=0b01 { }
-Sz: ".l" is sz=0b10 { }
+Sz: ".B" is sz=0b00 { }
+Sz: ".W" is sz=0b01 { }
+Sz: ".L" is sz=0b10 { }
 
 with EA: {
     # 1. Register direct
@@ -98,7 +98,7 @@ EAd: EA is EA { export EA; }
 :SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
 :CMP_G  is (op=0x08 | op=0x09 | op=0x0A) unimpl
 :MOV":G"^Sz EAs, EAd is op_2_to_7=0b000011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
-:MOV":G"^Sz EAs, r0 is op_2_to_7=0b000011 & Sz & r0; (ea_a=1 ... & EAs) unimpl
+:MOV":G"^Sz EAs, R0 is op_2_to_7=0b000011 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 :ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
 :SUB_Q  is (op=0x14 | op=0x15 | op=0x16) unimpl
@@ -108,7 +108,7 @@ EAd: EA is EA { export EA; }
 :ADD_R  is (op=0x20 | op=0x21 | op=0x22) unimpl
 :SUB_R  is (op=0x24 | op=0x25 | op=0x26) unimpl
 :CMP_R  is (op=0x28 | op=0x29 | op=0x2A) unimpl
-:MOV":R"^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
+:MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
 :ADD_RQ is (op=0x30 | op=0x31 | op=0x32) unimpl
 :SUB_RQ is (op=0x34 | op=0x35 | op=0x36) unimpl

@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-LOCATION=$(pwd)
-pushd "$GHIDRA_INSTALL_DIR/support"
+"$GHIDRA_INSTALL_DIR/support/sleigh" "data/languages/hd641016.slaspec"
 
-./sleigh "$LOCATION/data/languages/hd641016.slaspec"
+pytest
