@@ -40,3 +40,10 @@ def test_rts(context: Context):
     assert len(disasm.instructions) == 1
     assert disasm.instructions[0].mnem == "RTS"
     assert disasm.instructions[0].body == ""
+
+
+def test_orc(context: Context):
+    disasm = context.disassemble(b"\xf9\x20\x71\x01", 0x1177)
+    assert len(disasm.instructions) == 1
+    assert disasm.instructions[0].mnem == "ORC"
+    assert disasm.instructions[0].body == "0x1.B, CCR"

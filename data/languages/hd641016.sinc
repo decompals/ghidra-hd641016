@@ -21,12 +21,12 @@ define token opcode(8)
     ea_4_to_6 = (4,6)
     ea_6 = (6,6)
     ea_Sd = (4,5)
-    ea_Si = (0,1)
+    ea_si = (0,1)
     ea_a = (7,7)
 ;
 
 define token data8 (8)
-    CR      = (0,7) # TODO: make this a type
+    cr_code = (0,7)
     imm8    = (0,7)
     simm8   = (0,7) signed
     ea8     = (0,7)
@@ -113,9 +113,25 @@ REGLIST_R15: REGLIST_R14 R15  is REGLIST_R14 & reglist_r15=1 & R15 { }
 REGLIST_R15: REGLIST_R14      is REGLIST_R14 & reglist_r15=0 { }
 REGLIST: REGLIST_R15          is REGLIST_R15 { }
 
+CR: "CCR"   is cr_code=0b00100000 { }
+CR: "VBNR"  is cr_code=0b00000001 { }
+CR: "CBNR"  is cr_code=0b01000000 { }
+CR: "BSP"   is cr_code=0b01000001 { }
+CR: "BMR"   is cr_code=0b10000000 { }
+CR: "GBNR"  is cr_code=0b10000001 { }
+CR: "SR"    is cr_code=0b10100000 { }
+CR: "EBR"   is cr_code=0b11000000 { }
+CR: "RBR"   is cr_code=0b11000001 { }
+CR: "USP"   is cr_code=0b11000010 { }
+CR: "IBR"   is cr_code=0b11000011 { }
+
 Sz: ".B" is sz=0b00 { }
 Sz: ".W" is sz=0b01 { }
 Sz: ".L" is sz=0b10 { }
+
+ea_Si: ".B" is ea_si=0b01 { }
+ea_Si: ".W" is ea_si=0b10 { }
+ea_Si: ".L" is ea_si=0b11 { }
 
 with EA: {
     # 1. Register direct
@@ -134,14 +150,14 @@ with EA: {
     : "@-"Rn is Rn & ea_4_to_6=0b110 { }
 
     # 5. Immediate
-    : imm8 is ea_2_to_6=0b11100 & ea_Si=0b01; imm8 { }
-    : imm16 is ea_2_to_6=0b11100 & ea_Si=0b10; imm16 { }
-    : imm32 is ea_2_to_6=0b11100 & ea_Si=0b11; imm32 { }
+    : imm8^ea_Si is ea_2_to_6=0b11100 & ea_si=0b01 & ea_Si; imm8 { }
+    : imm16^ea_Si is ea_2_to_6=0b11100 & ea_si=0b10 & ea_Si; imm16 { }
+    : imm32^ea_Si is ea_2_to_6=0b11100 & ea_si=0b11 & ea_Si; imm32 { }
 
     # 6. Absolute Address
-    : @ imm8  is ea_2_to_6=0b11101 & ea_Si=0b01; imm8 { }
-    : @ imm16 is ea_2_to_6=0b11101 & ea_Si=0b10; imm16 { }
-    : @ imm32 is ea_2_to_6=0b11101 & ea_Si=0b11; imm32 { }
+    : "@" imm8  is ea_2_to_6=0b11101 & ea_si=0b01; imm8 { }
+    : "@" imm16 is ea_2_to_6=0b11101 & ea_si=0b10; imm16 { }
+    : "@" imm32 is ea_2_to_6=0b11101 & ea_si=0b11; imm32 { }
 }
 
 EAs: EA is EA { export EA; }
@@ -267,7 +283,7 @@ EAd: EA is EA { export EA; }
 # F6
 # F7
 :ANDC   is op = 0xF8 unimpl
-:ORC <EAs>, CR    is op = 0b11111001; CR; EAs unimpl
+:ORC EAs, CR    is op = 0b11111001; CR; EAs unimpl
 :XORC   is op = 0xFA unimpl
 :LDC <EAs>, CR    is op = 0b11111011; CR; EAs unimpl
 :STC CR, <EAd>    is op = 0b11111100; CR; EAd unimpl
