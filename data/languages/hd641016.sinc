@@ -21,16 +21,19 @@ define token opcode(8)
 ;
 
 define token data8 (8)
-   imm8		= (0,7)
-   ea8		= (0,7)
+    imm8    = (0,7)
+    simm8   = (0,7) signed
+    ea8     = (0,7)
 ;
 
 define token data16 (16)
-	imm16 = (0,15)
+    imm16   = (0,15)
+    simm16  = (0,15) signed
 ;
 
 define token data32 (32)
-	imm32 = (0,31)
+	imm32   = (0,31)
+    simm32  = (0,31) signed
 ;
 
 attach variables [ Rn ] [
@@ -38,13 +41,22 @@ attach variables [ Rn ] [
 	r8  r9 r10 r11 r12  r13  r14  r15
 ];
 
+disp8: rel is simm8 [ rel = inst_next + simm8; ] {
+    export *:4 rel;
+} 
+disp16: rel is simm16 [ rel = inst_next + simm16; ] {
+    export *:4 rel;
+} 
+disp32: rel is simm32 [ rel = inst_next + simm32; ] {
+    export *:4 rel;
+}
+
 Sz: ".b" is sz=0b00 { }
 Sz: ".w" is sz=0b01 { }
 Sz: ".l" is sz=0b10 { }
 
 EA: "@"Rn"+" is Rn & ea_4_to_6=0b101 { }
 EA: "@-"Rn is Rn & ea_4_to_6=0b110 { }
-
 
 EAs: EA is EA { export EA; }
 EAd: EA is EA { export EA; }
@@ -87,7 +99,8 @@ EAd: EA is EA { export EA; }
 
 }
 
-:LDM    is (op=0x74 | op=0x75 | op=0x76) unimpl
+# TODO: parse register list
+:LDM <EAs>, <imm16>    is (op_2_to_7=0b011101 & sz); EAs; imm16 unimpl
 :MOVTPE is (op=0x78 | op=0x79 | op=0x7A) unimpl
 :MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
@@ -111,7 +124,9 @@ EAd: EA is EA { export EA; }
 :EXTU   is (op=0xAC | op=0xAD | op=0xAE) unimpl
 :DNEG   is (op=0xAF) unimpl
 
-:BNE    is (op=0xB0 | op=0xB1 | op=0xB2) unimpl
+:BNE disp8 is (op_2_to_7=0b101100 & sz=0b00); disp8 unimpl
+:BNE disp16 is (op_2_to_7=0b101100 & sz=0b01); disp16 unimpl
+:BNE disp32 is (op_2_to_7=0b101100 & sz=0b10); disp32 unimpl
 :XCH    is (op=0xB3) unimpl
 :SCB    is (op=0xB4 | op=0xB5 | op=0xB6) unimpl
 :SET    is (op=0xB7) unimpl
