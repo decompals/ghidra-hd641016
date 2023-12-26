@@ -19,3 +19,17 @@ def test_mov_q(context: Context):
     assert len(disasm.instructions) == 1
     assert disasm.instructions[0].mnem == "MOV.L"
     assert disasm.instructions[0].body == "R9, R1"
+
+
+def test_mov_b(context: Context):
+    disasm = context.disassemble(b"\x0c\x50\x51", 0xDB4)
+    assert len(disasm.instructions) == 1
+    assert disasm.instructions[0].mnem == "MOV.B"
+    assert disasm.instructions[0].body == "@R0+, @R1+"
+
+
+def test_rts(context: Context):
+    disasm = context.disassemble(b"\xbb", 0x117B)
+    assert len(disasm.instructions) == 1
+    assert disasm.instructions[0].mnem == "RTS"
+    assert disasm.instructions[0].body == ""
