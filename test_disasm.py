@@ -28,6 +28,13 @@ def test_mov_b(context: Context):
     assert disasm.instructions[0].body == "@R0+, @R1+"
 
 
+def test_ldm(context: Context):
+    disasm = context.disassemble(b"\x76\x5F\x00\x03", 0xDB9)
+    assert len(disasm.instructions) == 1
+    assert disasm.instructions[0].mnem == "LDM.L"
+    assert disasm.instructions[0].body == "@R15+, [R0 R1]"
+
+
 def test_rts(context: Context):
     disasm = context.disassemble(b"\xbb", 0x117B)
     assert len(disasm.instructions) == 1
