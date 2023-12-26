@@ -26,6 +26,7 @@ define token opcode(8)
 ;
 
 define token data8 (8)
+    CR      = (0,7) # TODO: make this a type
     imm8    = (0,7)
     simm8   = (0,7) signed
     ea8     = (0,7)
@@ -64,6 +65,9 @@ Sz: ".w" is sz=0b01 { }
 Sz: ".l" is sz=0b10 { }
 
 with EA: {
+    # 1. Register direct
+    : Rn is Rn & ea_4_to_6=0b100 { }
+
     # 2. Register indirect
     : "@"Rn is Rn & ea_6=0b0 & ea_Sd=0b00 { }
     : "@("imm8, Rn) is Rn & ea_6=0b0 & ea_Sd=0b01; imm8 { }
@@ -199,10 +203,10 @@ EAd: EA is EA { export EA; }
 # F6
 # F7
 :ANDC   is op = 0xF8 unimpl
-:ORC <EAs>, imm8    is op = 0b11111001; imm8; EAs unimpl
+:ORC <EAs>, CR    is op = 0b11111001; CR; EAs unimpl
 :XORC   is op = 0xFA unimpl
-:LDC    is op = 0xFB unimpl
-:STC    is op = 0xFC unimpl
+:LDC <EAs>, CR    is op = 0b11111011; CR; EAs unimpl
+:STC CR, <EAd>    is op = 0b11111100; CR; EAd unimpl
 :ICBN   is op = 0xFD unimpl
 :DCBN   is op = 0xFE unimpl
 :NOP    is op = 0xFF {}
