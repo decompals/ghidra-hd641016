@@ -17,9 +17,11 @@ define token opcode(8)
 
     ead = (0,6)
     Rn = (0,3)
+    ea_2_to_6 = (2,6)
     ea_4_to_6 = (4,6)
     ea_6 = (6,6)
     ea_Sd = (4,5)
+    ea_Si = (0,1)
     ea_a = (7,7)
 ;
 
@@ -73,6 +75,11 @@ with EA: {
 
     # 4. Register indirect auto-decrement
     : "@-"Rn is Rn & ea_4_to_6=0b110 { }
+
+    # 5. Immediate
+    : imm8 is ea_2_to_6=0b11100 & ea_Si=0b01; imm8 { }
+    : imm16 is ea_2_to_6=0b11100 & ea_Si=0b10; imm16 { }
+    : imm32 is ea_2_to_6=0b11100 & ea_Si=0b11; imm32 { }
 }
 
 EAs: EA is EA { export EA; }
@@ -192,7 +199,7 @@ EAd: EA is EA { export EA; }
 # F6
 # F7
 :ANDC   is op = 0xF8 unimpl
-:ORC    is op = 0xF9 unimpl
+:ORC <EAs>, imm8    is op = 0b11111001; imm8; EAs unimpl
 :XORC   is op = 0xFA unimpl
 :LDC    is op = 0xFB unimpl
 :STC    is op = 0xFC unimpl
