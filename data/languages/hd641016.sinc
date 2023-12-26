@@ -38,14 +38,21 @@ attach variables [ Rn ] [
 	r8  r9 r10 r11 r12  r13  r14  r15
 ];
 
+Sz: ".b" is sz=0b00 { }
+Sz: ".w" is sz=0b01 { }
+Sz: ".l" is sz=0b10 { }
+
 EA: "@"Rn"+" is Rn & ea_4_to_6=0b101 { }
 EA: "@-"Rn is Rn & ea_4_to_6=0b110 { }
 
 
+EAs: EA is EA { export EA; }
+EAd: EA is EA { export EA; }
+
 :ADD_G  is (op=0x00 | op=0x01 | op=0x02) unimpl
 :SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
 :CMP_G  is (op=0x08 | op=0x09 | op=0x0A) unimpl
-:MOV_G  is (op=0x0C | op=0x0D | op=0x0E) unimpl
+:MOV":G"^Sz EAs, EAd is op_2_to_7=0b000011 & Sz; EAs; EAd unimpl
 
 :ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
 :SUB_Q  is (op=0x14 | op=0x15 | op=0x16) unimpl
