@@ -84,6 +84,11 @@ with EA: {
     : imm8 is ea_2_to_6=0b11100 & ea_Si=0b01; imm8 { }
     : imm16 is ea_2_to_6=0b11100 & ea_Si=0b10; imm16 { }
     : imm32 is ea_2_to_6=0b11100 & ea_Si=0b11; imm32 { }
+
+    # 6. Absolute Address
+    : @ imm8  is ea_2_to_6=0b11101 & ea_Si=0b01; imm8 { }
+    : @ imm16 is ea_2_to_6=0b11101 & ea_Si=0b10; imm16 { }
+    : @ imm32 is ea_2_to_6=0b11101 & ea_Si=0b11; imm32 { }
 }
 
 EAs: EA is EA { export EA; }
@@ -98,7 +103,7 @@ EAd: EA is EA { export EA; }
 :ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
 :SUB_Q  is (op=0x14 | op=0x15 | op=0x16) unimpl
 :CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
-:MOV_Q  is (op=0x1C | op=0x1D | op=0x1E) unimpl
+:MOV":Q"^Sz simm8, EAd is (op_2_to_7=0b000111 & Sz); simm8; EAd unimpl
 
 :ADD_R  is (op=0x20 | op=0x21 | op=0x22) unimpl
 :SUB_R  is (op=0x24 | op=0x25 | op=0x26) unimpl
@@ -148,7 +153,9 @@ EAd: EA is EA { export EA; }
 :DADD   is (op=0xA3) unimpl
 :BCC_G  is (op=0xA4 | op=0xA5 | op=0xA6) unimpl
 :DSUB   is (op=0xA7) unimpl
-:BSR    is (op=0xA8 | op=0xA9 | op=0xAA) unimpl
+:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
+:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
+:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
 :JSR    is (op=0xAB) unimpl
 :EXTU   is (op=0xAC | op=0xAD | op=0xAE) unimpl
 :DNEG   is (op=0xAF) unimpl
