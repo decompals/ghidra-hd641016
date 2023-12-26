@@ -18,12 +18,18 @@ define token opcode(8)
     ead = (0,6)
     Rn = (0,3)
     ea_4_to_6 = (4,6)
+    ea_6 = (6,6)
+    ea_Sd = (4,5)
+    ea_a = (7,7)
 ;
 
 define token data8 (8)
     imm8    = (0,7)
     simm8   = (0,7) signed
     ea8     = (0,7)
+
+    Rnd     = (0,3)
+    Rns     = (4,7)
 ;
 
 define token data16 (16)
@@ -36,7 +42,7 @@ define token data32 (32)
     simm32  = (0,31) signed
 ;
 
-attach variables [ Rn ] [
+attach variables [ Rn Rnd Rns ] [
 	r0  r1  r2  r3  r4  r5  r6  r7
 	r8  r9 r10 r11 r12  r13  r14  r15
 ];
@@ -55,8 +61,19 @@ Sz: ".b" is sz=0b00 { }
 Sz: ".w" is sz=0b01 { }
 Sz: ".l" is sz=0b10 { }
 
-EA: "@"Rn"+" is Rn & ea_4_to_6=0b101 { }
-EA: "@-"Rn is Rn & ea_4_to_6=0b110 { }
+with EA: {
+    # 2. Register indirect
+    : "@"Rn is Rn & ea_6=0b0 & ea_Sd=0b00 { }
+    : "@("imm8, Rn) is Rn & ea_6=0b0 & ea_Sd=0b01; imm8 { }
+    : "@("imm16, Rn) is Rn & ea_6=0b0 & ea_Sd=0b10; imm16 { }
+    : "@("imm32, Rn) is Rn & ea_6=0b0 & ea_Sd=0b11; imm32 { }
+
+    # 3. Register indirect auto-increment
+    : "@"Rn"+" is Rn & ea_4_to_6=0b101 { }
+
+    # 4. Register indirect auto-decrement
+    : "@-"Rn is Rn & ea_4_to_6=0b110 { }
+}
 
 EAs: EA is EA { export EA; }
 EAd: EA is EA { export EA; }
@@ -64,7 +81,8 @@ EAd: EA is EA { export EA; }
 :ADD_G  is (op=0x00 | op=0x01 | op=0x02) unimpl
 :SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
 :CMP_G  is (op=0x08 | op=0x09 | op=0x0A) unimpl
-:MOV":G"^Sz EAs, EAd is op_2_to_7=0b000011 & Sz; EAs; EAd unimpl
+:MOV":G"^Sz EAs, EAd is op_2_to_7=0b000011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:MOV":G"^Sz EAs, r0 is op_2_to_7=0b000011 & Sz & r0; (ea_a=1 ... & EAs) unimpl
 
 :ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
 :SUB_Q  is (op=0x14 | op=0x15 | op=0x16) unimpl
@@ -74,7 +92,7 @@ EAd: EA is EA { export EA; }
 :ADD_R  is (op=0x20 | op=0x21 | op=0x22) unimpl
 :SUB_R  is (op=0x24 | op=0x25 | op=0x26) unimpl
 :CMP_R  is (op=0x28 | op=0x29 | op=0x2A) unimpl
-:MOV_R  is (op=0x2C | op=0x2D | op=0x2E) unimpl
+:MOV":R"^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
 :ADD_RQ is (op=0x30 | op=0x31 | op=0x32) unimpl
 :SUB_RQ is (op=0x34 | op=0x35 | op=0x36) unimpl
@@ -95,12 +113,12 @@ EAd: EA is EA { export EA; }
 :BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
 
 # TODO: determine size, parse ea, parse register list
-:STM.^sz <imm16>, EA    is op_2_to_7=0b011100 & sz; EA; imm16 {
+:STM^Sz <imm16>, EA    is op_2_to_7=0b011100 & Sz; EA; imm16 {
 
 }
 
 # TODO: parse register list
-:LDM <EAs>, <imm16>    is (op_2_to_7=0b011101 & sz); EAs; imm16 unimpl
+:LDM^Sz <EAs>, <imm16>    is (op_2_to_7=0b011101 & Sz); EAs; imm16 unimpl
 :MOVTPE is (op=0x78 | op=0x79 | op=0x7A) unimpl
 :MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
