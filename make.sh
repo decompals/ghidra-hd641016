@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
 LOCATION=$(pwd)
-pushd ../../../support
+pushd "$GHIDRA_INSTALL_DIR/support"
 
 ./sleigh -a "$LOCATION"
