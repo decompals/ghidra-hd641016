@@ -1,0 +1,149 @@
+define endian=big;
+define alignment=1;
+
+define space ram type=ram_space size=4 wordsize=1 default;
+define space register type=register_space size=4;
+
+define register offset=0 size=4
+[r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15];
+define register offset=0x100 size=4 [pc ssp bsp ebr rbr ibr cbnr sr ccr bmr gbnr vbnr];
+
+# 8 – token size
+# field op includes bits 0 to 7
+define token opcode(8)
+	op = (0,7)
+	op_0_to_1 = (0,1)
+	op_2_to_7 = (2,7)
+;
+
+define token data8 (8)
+   imm8		= (0,7)
+   ea		= (0,7)
+;
+
+define token data16 (16)
+	imm16 = (0,15)
+;
+
+define token data32 (32)
+	imm32 = (0,31)
+;
+
+
+:ADD_G  is (op=0x00 | op=0x01 | op=0x02) unimpl
+:SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
+:CMP_G  is (op=0x08 | op=0x09 | op=0x0A) unimpl
+:MOV_G  is (op=0x0C | op=0x0D | op=0x0E) unimpl
+
+:ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
+:SUB_Q  is (op=0x14 | op=0x15 | op=0x16) unimpl
+:CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
+:MOV_Q  is (op=0x1C | op=0x1D | op=0x1E) unimpl
+
+:ADD_R  is (op=0x20 | op=0x21 | op=0x22) unimpl
+:SUB_R  is (op=0x24 | op=0x25 | op=0x26) unimpl
+:CMP_R  is (op=0x28 | op=0x29 | op=0x2A) unimpl
+:MOV_R  is (op=0x2C | op=0x2D | op=0x2E) unimpl
+
+:ADD_RQ is (op=0x30 | op=0x31 | op=0x32) unimpl
+:SUB_RQ is (op=0x34 | op=0x35 | op=0x36) unimpl
+:CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
+:MOV_RQ is (op=0x3C | op=0x3D | op=0x3E) unimpl
+
+:ADDS   is (op=0x40 | op=0x41 | op=0x42) unimpl
+:SUBS   is (op=0x44 | op=0x45 | op=0x46) unimpl
+:CMPS   is (op=0x48 | op=0x49 | op=0x4A) unimpl
+:MOVS   is (op=0x4C | op=0x4D | op=0x4E) unimpl
+
+:ADDX   is (op=0x50 | op=0x51 | op=0x52) unimpl
+:SUBX   is (op=0x54 | op=0x55 | op=0x56) unimpl
+:TST    is (op=0x58 | op=0x59 | op=0x5A) unimpl
+:MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
+
+:SFT    is (op=0x60 | op=0x61 | op=0x62 | op=0x64 | op=0x65 | op=0x66) unimpl
+:BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
+
+# TODO: determine size, parse ea, parse register list
+:STM ea, imm16    is op_2_to_7=0b011100; ea; imm16 {
+
+}
+
+:LDM    is (op=0x74 | op=0x75 | op=0x76) unimpl
+:MOVTPE is (op=0x78 | op=0x79 | op=0x7A) unimpl
+:MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
+
+:AND    is (op=0x80 | op=0x81 | op=0x82) unimpl
+:XOR    is (op=0x84 | op=0x85 | op=0x86) unimpl
+:OR     is (op=0x88 | op=0x89 | op=0x8A) unimpl
+:NEG    is (op=0x8C | op=0x8D | op=0x8E) unimpl
+
+:NOT    is (op=0x90 | op=0x91 | op=0x92) unimpl
+:STRING is (op=0x94 | op=0x95 | op=0x96) unimpl
+:BRA    is (op=0x98 | op=0x99 | op=0x9A) unimpl
+:JMP    is (op=0x9B) unimpl
+:NEGX   is (op=0x9C | op=0x9D | op=0x9E) unimpl
+
+:BEQ    is (op=0xA0 | op=0xA1 | op=0xA2) unimpl
+:DADD   is (op=0xA3) unimpl
+:BCC_G  is (op=0xA4 | op=0xA5 | op=0xA6) unimpl
+:DSUB   is (op=0xA7) unimpl
+:BSR    is (op=0xA8 | op=0xA9 | op=0xAA) unimpl
+:JSR    is (op=0xAB) unimpl
+:EXTU   is (op=0xAC | op=0xAD | op=0xAE) unimpl
+:DNEG   is (op=0xAF) unimpl
+
+:BNE    is (op=0xB0 | op=0xB1 | op=0xB2) unimpl
+:XCH    is (op=0xB3) unimpl
+:SCB    is (op=0xB4 | op=0xB5 | op=0xB6) unimpl
+:SET    is (op=0xB7) unimpl
+:RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
+:RTS    is (op=0xBB) {
+    # TODO: get the correct stack pointer
+    pc = *ssp;
+    ssp = ssp + 4;
+
+    goto [pc];
+}
+:EXTS   is (op=0xBC | op=0xBD | op=0xBE) unimpl
+:MOVA   is (op=0xBF) unimpl
+
+:LINK   is (op=0xD0 | op=0xD1 | op=0xD2) unimpl
+:UNLK   is (op=0xD3) unimpl
+:BFEXT  is (op=0xD4) unimpl
+:BFINS  is (op=0xD5) unimpl
+:BFSCH  is (op=0xD6) unimpl
+:BFMOV  is (op=0xD7) unimpl
+
+:MOVTP  is (op=0xE0 | op=0xE1) unimpl
+:MOVFP  is (op=0xE2 | op=0xE3) unimpl
+:CGBN   is (op=0xE4 | op=0xE5 | op=0xE6 | op=0xE7) unimpl
+:PGBN   is (op=0xE8 | op=0xE9) unimpl
+:SWAP   is (op=0xEA | op=0xEB) unimpl
+:TAS    is (op=0xEC) unimpl
+:MUL    is (op=0xEE) unimpl
+:DIV    is (op=0xEF) unimpl
+
+:RESET  is op = 0xF0 unimpl
+:RTE    is op = 0xF1 {
+    sr = *ssp;
+    ssp = ssp + 4;
+
+    pc = *ssp;
+    ssp  = ssp + 4;
+
+    goto [pc];
+}
+:TRAPA  is op = 0xF2 unimpl
+:TRAP   is op = 0xF3 unimpl
+:RTR    is op = 0xF4 unimpl
+:SLEEP  is op = 0xF5 unimpl
+# F6
+# F7
+:ANDC   is op = 0xF8 unimpl
+:ORC    is op = 0xF9 unimpl
+:XORC   is op = 0xFA unimpl
+:LDC    is op = 0xFB unimpl
+:STC    is op = 0xFC unimpl
+:ICBN   is op = 0xFD unimpl
+:DCBN   is op = 0xFE unimpl
+:NOP    is op = 0xFF {}
