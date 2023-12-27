@@ -253,7 +253,10 @@ EAd: EA is EA { export EA; }
 :MOVTPE is (op=0x78 | op=0x79 | op=0x7A) unimpl
 :MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
-:AND    is (op=0x80 | op=0x81 | op=0x82) unimpl
+# AND (AND Logical)
+:AND^Sz EAs, EAd  is op_2_to_7=0b100000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:AND^Sz EAs, R0   is op_2_to_7=0b100000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
 :XOR    is (op=0x84 | op=0x85 | op=0x86) unimpl
 :OR     is (op=0x88 | op=0x89 | op=0x8A) unimpl
 :NEG    is (op=0x8C | op=0x8D | op=0x8E) unimpl
