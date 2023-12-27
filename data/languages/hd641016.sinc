@@ -226,7 +226,9 @@ EAd: EA is EA { export EA; }
 # ADD:RQ (Add Register Quick)
 :ADD^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & Sz); Rnd_4_to_7 & imm4 unimpl
 
-:SUB_RQ is (op=0x34 | op=0x35 | op=0x36) unimpl
+# SUB:RQ (Subtract Register Quick)
+:SUB^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001101 & Sz); Rnd_4_to_7 & imm4 unimpl
+
 :CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
 :MOV_RQ is (op=0x3C | op=0x3D | op=0x3E) unimpl
 
@@ -237,7 +239,10 @@ EAd: EA is EA { export EA; }
 
 :ADDX   is (op=0x50 | op=0x51 | op=0x52) unimpl
 :SUBX   is (op=0x54 | op=0x55 | op=0x56) unimpl
-:TST    is (op=0x58 | op=0x59 | op=0x5A) unimpl
+
+# TST (Test)
+:TST^Sz EAd is op_2_to_7=0b010110 & Sz; EAd unimpl
+
 :MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
 
 :SFT    is (op=0x60 | op=0x61 | op=0x62 | op=0x64 | op=0x65 | op=0x66) unimpl
