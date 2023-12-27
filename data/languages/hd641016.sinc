@@ -17,6 +17,8 @@ define token opcode(8)
 
     ead = (0,6)
     Rn = (0,3)
+    ea_s1 = (4,5)
+    ea_s2 = (6,7)
     ea_2_to_6 = (2,6)
     ea_4_to_6 = (4,6)
     ea_6_to_7 = (6,7)
@@ -30,7 +32,9 @@ define token data8 (8)
     cc      = (0,3)
     cr_code = (0,7)
     imm4    = (0,3)
+    imm5    = (0,4)
     imm8    = (0,7)
+    imm8_b  = (0,7)
     simm8   = (0,7) signed
     ea8     = (0,7)
 
@@ -40,6 +44,17 @@ define token data8 (8)
     Rnd     = (0,3)
     Rns     = (4,7)
     Rnd_4_to_7 = (4,7)
+;
+
+define token mul8 (8)
+    mul_fnc = (4,6)
+    mul_7   = (7,7)
+;
+
+define token shift8(8)
+    shift_Rn = (0,3)
+    shift_Imm = (0,4)
+    shift_fnc = (5,7)
 ;
 
 define token reglist(16)
@@ -68,10 +83,11 @@ define token data16 (16)
 
 define token data32 (32)
 	imm32   = (0,31)
+	imm32_b   = (0,31)
     simm32  = (0,31) signed
 ;
 
-attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 ] [
+attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 shift_Rn] [
 	R0  R1  R2  R3  R4  R5  R6  R7
 	R8  R9 R10 R11 R12  R13  R14  R15
 ];
@@ -185,9 +201,15 @@ with EA: {
 
     # 10. Program counter relative
     : @PC           is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b00) { }
-    : @(imm8, PC)   is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b01); imm8 { }
-    : @(imm16, PC)  is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b10); imm16 { }
-    : @(imm32, PC)  is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b11); imm32 { }
+    : @(simm8, PC)   is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b01); simm8 { }
+    : @(simm16, PC)  is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b10); simm16 { }
+    : @(simm32, PC)  is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b11); simm32 { }
+
+    # 11. Register double indirect
+    : @(imm8, @(imm8_b, Rn)) is (ead=0b1111110); (Rn & ea_s1=0b01 & ea_s2=0b01); imm8; imm8_b { }
+    : @(imm8, @(imm32_b, Rn)) is (ead=0b1111110); (Rn & ea_s1=0b01 & ea_s2=0b11); imm8; imm32_b { }
+    : @(imm32, @(imm8_b, Rn)) is (ead=0b1111110); (Rn & ea_s1=0b11 & ea_s2=0b01); imm32; imm8_b { }
+    : @(imm32, @(imm32_b, Rn)) is (ead=0b1111110); (Rn & ea_s1=0b11 & ea_s2=0b11); imm32; imm32_b { }
 }
 
 EAs: EA is EA { export EA; }
@@ -216,9 +238,14 @@ EAd: EA is EA { export EA; }
 :CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
 :MOV":Q"^Sz simm8, EAd is (op_2_to_7=0b000111 & Sz); simm8; EAd unimpl
 
-:ADD_R  is (op=0x20 | op=0x21 | op=0x22) unimpl
-:SUB_R  is (op=0x24 | op=0x25 | op=0x26) unimpl
-:CMP_R  is (op=0x28 | op=0x29 | op=0x2A) unimpl
+# ADD:R (Add Register)
+:ADD^Sz Rns, Rnd is (op_2_to_7=0b001000 & Sz); (Rns & Rnd) unimpl
+
+# SUB:R (Subtract Register)
+:SUB^Sz Rns, Rnd is (op_2_to_7=0b001001 & Sz); (Rns & Rnd) unimpl
+
+# CMP:R (Compare Register)
+:CMP Rns, Rnd is (op_2_to_7=0b001010 & Sz); (Rns & Rnd) unimpl
 
 # MOV:R (Move Register)
 :MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
@@ -245,7 +272,19 @@ EAd: EA is EA { export EA; }
 
 :MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
 
-:SFT    is (op=0x60 | op=0x61 | op=0x62 | op=0x64 | op=0x65 | op=0x66) unimpl
+# SHAL (Shift Arithmetically Left)
+# TODO: implement
+
+# SHAR (Shift Arithmetically Right)
+# TODO: implement
+
+# SHLL (Shift Logically Left)
+:SHLL^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b101 & shift_Rn); EAd unimpl
+:SHLL^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b101 & shift_Imm); EAd unimpl
+
+# SHLR (Shift Logically Right)
+# TODO: implement
+
 :BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
 
 # TODO: determine size, parse ea, parse register list
@@ -263,16 +302,35 @@ EAd: EA is EA { export EA; }
 :AND^Sz EAs, R0   is op_2_to_7=0b100000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 :XOR    is (op=0x84 | op=0x85 | op=0x86) unimpl
-:OR     is (op=0x88 | op=0x89 | op=0x8A) unimpl
+
+# OR (OR Logical)
+:OR^Sz EAs, EAd  is op_2_to_7=0b100010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:OR^Sz EAs, R0   is op_2_to_7=0b100010 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
 :NEG    is (op=0x8C | op=0x8D | op=0x8E) unimpl
 
 :NOT    is (op=0x90 | op=0x91 | op=0x92) unimpl
 :STRING is (op=0x94 | op=0x95 | op=0x96) unimpl
-:BRA    is (op=0x98 | op=0x99 | op=0x9A) unimpl
+
+# BRA (Branch Always)
+:BRA disp8  is (op_2_to_7=0b100110 & sz=0b00); disp8 {
+    goto disp8;
+}
+:BRA disp16 is (op_2_to_7=0b100110 & sz=0b01); disp16 {
+    goto disp16;
+}
+:BRA disp32 is (op_2_to_7=0b100110 & sz=0b10); disp32 {
+    goto disp32;
+}
+
 :JMP    is (op=0x9B) unimpl
 :NEGX   is (op=0x9C | op=0x9D | op=0x9E) unimpl
 
-:BEQ    is (op=0xA0 | op=0xA1 | op=0xA2) unimpl
+# BEQ (Branch if Equal)
+:BEQ disp8  is (op_2_to_7=0b101000 & sz=0b00); disp8 unimpl
+:BEQ disp16 is (op_2_to_7=0b101000 & sz=0b01); disp16 unimpl
+:BEQ disp32 is (op_2_to_7=0b101000 & sz=0b10); disp32 unimpl
+
 :DADD   is (op=0xA3) unimpl
 
 # Bcc:G (Branch According to Condition Code)
@@ -284,8 +342,13 @@ EAd: EA is EA { export EA; }
 :BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
 :BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
 :BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
-:JSR    is (op=0xAB) unimpl
-:EXTU   is (op=0xAC | op=0xAD | op=0xAE) unimpl
+
+# JSR (Jump to Subroutine)
+:JSR EAd is (op=0b10101011); EAd unimpl
+
+# EXTU (Extend as Unsigned)
+:EXTU^Sz Rnd is (op_2_to_7=0b101011 & Sz); Rnd unimpl
+
 :DNEG   is (op=0xAF) unimpl
 
 :BNE disp8 is (op_2_to_7=0b101100 & sz=0b00); disp8 unimpl
@@ -324,7 +387,15 @@ EAd: EA is EA { export EA; }
 :PGBN   is (op=0xE8 | op=0xE9) unimpl
 :SWAP   is (op=0xEA | op=0xEB) unimpl
 :TAS    is (op=0xEC) unimpl
-:MUL    is (op=0xEE) unimpl
+
+# MULXS (Multiply Extended as Signed)
+:MULXS EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
+:MULXS EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=1 ... & EAs) unimpl
+
+# MULXS (Multiply Extended as Unsigned)
+:MULXU EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
+:MULXU EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
+
 :DIV    is (op=0xEF) unimpl
 
 :RESET  is op = 0xF0 unimpl
