@@ -79,10 +79,10 @@ disp32: rel is simm32 [ rel = inst_next + simm32; ] {
     export *:4 rel;
 }
 
-REGLIST_RO:             R0    is              reglist_r0=1 & R0 { }
-REGLIST_RO:                   is              reglist_r0=0 { }
-REGLIST_R1:  REGLIST_RO R1    is REGLIST_RO & reglist_r1=1 & R1 { }
-REGLIST_R1:  REGLIST_RO       is REGLIST_RO & reglist_r1=0 { }
+REGLIST_R0:             R0    is              reglist_r0=1 & R0 { }
+REGLIST_R0:                   is              reglist_r0=0 { }
+REGLIST_R1:  REGLIST_R0 R1    is REGLIST_R0 & reglist_r1=1 & R1 { }
+REGLIST_R1:  REGLIST_R0       is REGLIST_R0 & reglist_r1=0 { }
 REGLIST_R2:  REGLIST_R1 R2    is REGLIST_R1 & reglist_r2=1 & R2 { }
 REGLIST_R2:  REGLIST_R1       is REGLIST_R1 & reglist_r2=0 { }
 REGLIST_R3:  REGLIST_R2 R3    is REGLIST_R2 & reglist_r3=1 & R3 { }
