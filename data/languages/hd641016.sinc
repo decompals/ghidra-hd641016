@@ -13,6 +13,8 @@ define register offset=0x100 size=4 [PC ssp bsp ebr rbr ibr cbnr sr ccr bmr gbnr
 define token opcode(8)
 	op = (0,7)
 	sz = (0,1)
+	swap_s = (0,0)
+	op_1_to_7 = (1,7)
 	op_2_to_7 = (2,7)
 
     ead = (0,6)
@@ -252,7 +254,8 @@ EAd: EA is EA { export EA; }
 :AND^Sz EAs, EAd  is op_2_to_7=0b100000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
 :AND^Sz EAs, R0   is op_2_to_7=0b100000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
-# 16.3.8 - TODO: ANDC (AND CR Register)
+# 16.3.8 - ANDC (AND CR Register)
+:ANDC EAs, CR    is op=0b11111000; CR; EAs unimpl
 
 # 16.3.9 - Bcc:G (Branch According to Condition Code)
 :B^CC disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & CC; disp8 unimpl
@@ -355,7 +358,11 @@ EAd: EA is EA { export EA; }
 :MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
 # 16.3.50 - TODO: MOV:RQ (Move Register Quick)
-# 16.3.51 - TODO: MOVS (Move with Sign Extension)
+
+# 16.3.51 - MOVS (Move with Sign Extension)
+:MOVS^Sz EAs, EAd   is op_2_to_7=0b010011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:MOVS^Sz EAs, R0    is op_2_to_7=0b010011 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
 # 16.3.52 - TODO: MOVTP (Move to Peripheral)
 # 16.3.53 - TODO: MOVTPE (Move to Peripheral with E Clock)
 
@@ -419,7 +426,10 @@ EAd: EA is EA { export EA; }
 :SHLL^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b101 & shift_Rn); EAd unimpl
 :SHLL^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b101 & shift_Imm); EAd unimpl
 
-# 16.3.78 - TODO: SHLR (Shift Logically Right)
+# 16.3.78 - SHLR (Shift Logically Right)
+:SHLR^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b001 & shift_Rn); EAd unimpl
+:SHLR^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b001 & shift_Imm); EAd unimpl
+
 # 16.3.79 - TODO: SLEEP (Sleep)
 # 16.3.80 - TODO: SMOV (String Move)
 # 16.3.81 - TODO: SSCH (String Search According to Condition Codes)
@@ -443,7 +453,12 @@ EAd: EA is EA { export EA; }
 
 # 16.3.88 - TODO: SUBS (Subtract with Sign Extension)
 # 16.3.89 - TODO: SUBX (Subtract with CX Flag)
-# 16.3.90 - TODO: SWAP (Swap Register Halves)
+
+# 16.3.90 - SWAP (Swap Register Halves)
+swap_S: ".B" is swap_s=0b0 { }
+swap_S: ".W" is swap_s=0b1 { }
+:SWAP^swap_S EAd is op_1_to_7=0b1110101 & swap_S; EAd unimpl
+
 # 16.3.91 - TODO: TAS (Test and Set)
 # 16.3.92 - TODO: TRAP (Trap According to Condition Codes)
 
@@ -472,7 +487,6 @@ EAd: EA is EA { export EA; }
 :ADDS   is (op=0x40 | op=0x41 | op=0x42) unimpl
 :SUBS   is (op=0x44 | op=0x45 | op=0x46) unimpl
 :CMPS   is (op=0x48 | op=0x49 | op=0x4A) unimpl
-:MOVS   is (op=0x4C | op=0x4D | op=0x4E) unimpl
 
 :ADDX   is (op=0x50 | op=0x51 | op=0x52) unimpl
 :SUBX   is (op=0x54 | op=0x55 | op=0x56) unimpl
@@ -514,7 +528,6 @@ EAd: EA is EA { export EA; }
 :MOVFP  is (op=0xE2 | op=0xE3) unimpl
 :CGBN   is (op=0xE4 | op=0xE5 | op=0xE6 | op=0xE7) unimpl
 :PGBN   is (op=0xE8 | op=0xE9) unimpl
-:SWAP   is (op=0xEA | op=0xEB) unimpl
 :TAS    is (op=0xEC) unimpl
 
 :DIV    is (op=0xEF) unimpl
@@ -526,7 +539,6 @@ EAd: EA is EA { export EA; }
 :SLEEP  is op=0xF5 unimpl
 # F6
 # F7
-:ANDC   is op=0xF8 unimpl
 :XORC   is op=0xFA unimpl
 :ICBN   is op=0xFD unimpl
 :DCBN   is op=0xFE unimpl
