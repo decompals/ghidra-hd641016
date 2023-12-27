@@ -39,6 +39,7 @@ define token data8 (8)
 
     Rnd     = (0,3)
     Rns     = (4,7)
+    Rnd_4_to_7 = (4,7)
 ;
 
 define token reglist(16)
@@ -70,7 +71,7 @@ define token data32 (32)
     simm32  = (0,31) signed
 ;
 
-attach variables [ Rn Rnd Rns Rnx Rny ] [
+attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 ] [
 	R0  R1  R2  R3  R4  R5  R6  R7
 	R8  R9 R10 R11 R12  R13  R14  R15
 ];
@@ -222,7 +223,9 @@ EAd: EA is EA { export EA; }
 # MOV:R (Move Register)
 :MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
-:ADD_RQ is (op=0x30 | op=0x31 | op=0x32) unimpl
+# ADD:RQ (Add Register Quick)
+:ADD^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & Sz); Rnd_4_to_7 & imm4 unimpl
+
 :SUB_RQ is (op=0x34 | op=0x35 | op=0x36) unimpl
 :CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
 :MOV_RQ is (op=0x3C | op=0x3D | op=0x3E) unimpl
