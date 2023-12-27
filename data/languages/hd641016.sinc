@@ -27,6 +27,7 @@ define token opcode(8)
 ;
 
 define token data8 (8)
+    cc      = (0,3)
     cr_code = (0,7)
     imm4    = (0,3)
     imm8    = (0,7)
@@ -129,6 +130,23 @@ CR: "EBR"   is cr_code=0b11000000 { }
 CR: "RBR"   is cr_code=0b11000001 { }
 CR: "USP"   is cr_code=0b11000010 { }
 CR: "IBR"   is cr_code=0b11000011 { }
+
+CC: "CC"    is cc=0b0100 { }
+CC: "CS"    is cc=0b0101 { }
+CC: "NE"    is cc=0b0110 { }
+CC: "EQ"    is cc=0b0111 { }
+CC: "GE"    is cc=0b1100 { }
+CC: "LT"    is cc=0b1101 { }
+CC: "GT"    is cc=0b1110 { }
+CC: "LE"    is cc=0b1111 { }
+CC: "HI"    is cc=0b0010 { }
+CC: "LS"    is cc=0b0011 { }
+CC: "PL"    is cc=0b1010 { }
+CC: "MI"    is cc=0b1011 { }
+CC: "VC"    is cc=0b1000 { }
+CC: "VS"    is cc=0b1001 { }
+CC: "T"     is cc=0b0000 { }
+CC: "F"     is cc=0b0001 { }
 
 Sz: ".B" is sz=0b00 { }
 Sz: ".W" is sz=0b01 { }
@@ -245,7 +263,12 @@ EAd: EA is EA { export EA; }
 
 :BEQ    is (op=0xA0 | op=0xA1 | op=0xA2) unimpl
 :DADD   is (op=0xA3) unimpl
-:BCC_G  is (op=0xA4 | op=0xA5 | op=0xA6) unimpl
+
+# Bcc:G (Branch According to Condition Code)
+:B^CC disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & CC; disp8 unimpl
+:B^CC disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & CC; disp16 unimpl
+:B^CC disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & CC; disp32 unimpl
+
 :DSUB   is (op=0xA7) unimpl
 :BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
 :BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
