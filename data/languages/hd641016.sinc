@@ -87,7 +87,19 @@ define token data32 (32)
     simm32  = (0,31) signed
 ;
 
-attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 shift_Rn] [
+define token ea8a (8)
+    ea8a_Rn = (0,3)
+    ea8a_Sd = (4,5)
+    ea8a_L = (6,6)
+    ea8a_7 = (7,7)
+;
+
+define token ea8b (8)
+    ea8b_Xm = (0,3)
+    ea8b_Sf = (4,5)
+;
+
+attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 shift_Rn ea8a_Rn ea8b_Xm] [
 	R0  R1  R2  R3  R4  R5  R6  R7
 	R8  R9 R10 R11 R12  R13  R14  R15
 ];
@@ -198,6 +210,12 @@ with EA: {
     : "@" imm8  is ea_2_to_6=0b11101 & ea_si=0b01; imm8 { }
     : "@" imm16 is ea_2_to_6=0b11101 & ea_si=0b10; imm16 { }
     : "@" imm32 is ea_2_to_6=0b11101 & ea_si=0b11; imm32 { }
+
+    # 8. Register indirect with index
+    : "@("ea8b_Xm*Sf, ea8a_Rn)         is ead=0b1111100; ea8a_7=0 & ea8a_L & ea8a_Sd=0b00 & ea8a_Rn; ea8b_Sf & ea8b_Xm [ Sf = 1 << ea8b_Sf; ] { }
+    : "@("imm8, ea8b_Xm*Sf, ea8a_Rn)   is ead=0b1111100; ea8a_7=0 & ea8a_L & ea8a_Sd=0b01 & ea8a_Rn; ea8b_Sf & ea8b_Xm; imm8 [ Sf = 1 << ea8b_Sf; ] { }
+    : "@("imm16, ea8b_Xm*Sf, ea8a_Rn)  is ead=0b1111100; ea8a_7=0 & ea8a_L & ea8a_Sd=0b10 & ea8a_Rn; ea8b_Sf & ea8b_Xm; imm16 [ Sf = 1 << ea8b_Sf; ] { }
+    : "@("imm32, ea8b_Xm*Sf, ea8a_Rn)  is ead=0b1111100; ea8a_7=0 & ea8a_L & ea8a_Sd=0b11 & ea8a_Rn; ea8b_Sf & ea8b_Xm; imm32 [ Sf = 1 << ea8b_Sf; ] { }
 
     # 10. Program counter relative
     : @PC           is PC & (ead=0b1111101); (ea_6_to_7=0b10 & ea_Sd=0b00) { }
@@ -413,7 +431,9 @@ EAd: EA is EA { export EA; }
 # 16.3.84 - STM (Store Multiple Registers)
 :STM^Sz [REGLIST], EA    is op_2_to_7=0b011100 & Sz; EA; REGLIST unimpl
 
-# 16.3.85 - TODO: SUB:G (Subtract Binary)
+# 16.3.85 - SUB:G (Subtract Binary)
+:SUB^Sz EAs, EAd is op_2_to_7=0b000001 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:SUB^Sz EAs, R0 is op_2_to_7=0b000001 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.86 - SUB:R (Subtract Register)
 :SUB^Sz Rns, Rnd is (op_2_to_7=0b001001 & Sz); (Rns & Rnd) unimpl
@@ -442,8 +462,6 @@ EAd: EA is EA { export EA; }
 # 16.3.98 - TODO: XORC (Exclusive OR Control Register)
 
 @if defined(INCLUDE_TEMPS)
-:SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
-
 :ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
 
 :CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
