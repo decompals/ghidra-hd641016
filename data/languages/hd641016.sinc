@@ -215,46 +215,238 @@ with EA: {
 EAs: EA is EA { export EA; }
 EAd: EA is EA { export EA; }
 
-# ADD:G (Add Binary)
+# 16.3.1 - ADD:G (Add Binary)
 :ADD^Sz EAs, EAd is op_2_to_7=0b000000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
 :ADD^Sz EAs, R0 is op_2_to_7=0b000000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
+# 16.3.2 - TODO: ADD:Q (Add Quick)
 
-:SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
+# 16.3.3 - ADD:R (Add Register)
+:ADD^Sz Rns, Rnd is (op_2_to_7=0b001000 & Sz); (Rns & Rnd) unimpl
 
-# CMG:G (Compare)
+# 16.3.4 - ADD:RQ (Add Register Quick)
+:ADD^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & Sz); Rnd_4_to_7 & imm4 unimpl
+
+# 16.3.5 - TODO: ADDS (Add with Sign Extension)
+# 16.3.6 - TODO: ADDX (Add with CX Flag)
+
+# 16.3.7 - AND (AND Logical)
+:AND^Sz EAs, EAd  is op_2_to_7=0b100000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:AND^Sz EAs, R0   is op_2_to_7=0b100000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
+# 16.3.8 - TODO: ANDC (AND CR Register)
+
+# 16.3.9 - Bcc:G (Branch According to Condition Code)
+:B^CC disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & CC; disp8 unimpl
+:B^CC disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & CC; disp16 unimpl
+:B^CC disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & CC; disp32 unimpl
+:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
+:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
+:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
+
+# 16.3.10 - TODO: BCLR (Bit Test and Clear)
+
+# 16.3.11 - BEQ (Branch If Equal)
+:BEQ disp8  is (op_2_to_7=0b101000 & sz=0b00); disp8 unimpl
+:BEQ disp16 is (op_2_to_7=0b101000 & sz=0b01); disp16 unimpl
+:BEQ disp32 is (op_2_to_7=0b101000 & sz=0b10); disp32 unimpl
+
+# 16.3.12 - TODO: BFEXT (Bit Field Data Extract)
+# 16.3.13 - TODO: BFINS (Bit Field Data Insert)
+# 16.3.14 - TODO: BFMOV (Bit Field Data Move)
+# 16.3.15 - TODO: BFSCH (Bit Field Data Search)
+
+# 16.3.16 - BNE (Branch If Not Equal)
+:BNE disp8 is (op_2_to_7=0b101100 & sz=0b00); disp8 unimpl
+:BNE disp16 is (op_2_to_7=0b101100 & sz=0b01); disp16 unimpl
+:BNE disp32 is (op_2_to_7=0b101100 & sz=0b10); disp32 unimpl
+
+# 16.3.17 - TODO: BNOT (Bit Test and Not)
+
+# 16.3.18 - BRA (Branch Always)
+:BRA disp8  is (op_2_to_7=0b100110 & sz=0b00); disp8 {
+    goto disp8;
+}
+:BRA disp16 is (op_2_to_7=0b100110 & sz=0b01); disp16 {
+    goto disp16;
+}
+:BRA disp32 is (op_2_to_7=0b100110 & sz=0b10); disp32 {
+    goto disp32;
+}
+
+# 16.3.19 - TODO: BSET (Bit Test and Set)
+# 16.3.20 - TODO: BSR (Branch to Subroutine)
+# 16.3.21 - TODO: BTST (Bit Test)
+# 16.3.22 - TODO: CGBN (Push and Change Global Bank Number)
+
+# 16.3.23 - CLR (Clear)
+:CLR^Sz EAd is op_2_to_7=0b000101 & Sz; EAd unimpl
+
+# 16.3.24 - CMP:G (Compare)
 :CMP^Sz EAs, EAd is op_2_to_7=0b000010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
 :CMP^Sz EAs, R0 is op_2_to_7=0b000010 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
-# MOV:G (Move Data from Source to Destination)
+# 16.3.25 - TODO: CMP:Q (Compare Quick)
+
+# 16.3.26 - CMP:R (Compare Register)
+:CMP Rns, Rnd is (op_2_to_7=0b001010 & Sz); (Rns & Rnd) unimpl
+
+# 16.3.27 - TODO: CMP:RQ (Compare Register Quick)
+# 16.3.28 - TODO: CMPS (Compare with Sign Extension)
+# 16.3.29 - TODO: DADD (Decimal ADD with CX Flag)
+# 16.3.30 - TODO: DCBN (Decrement Current Bank Number)
+# 16.3.31 - TODO: DIVXS (Divide Extented as Signed)
+# 16.3.32 - TODO: DIVXU (Divide Extended as Unsigned)
+# 16.3.33 - TODO: DNEG (Decimal Negate with CX Flag)
+# 16.3.34 - TODO: DSUB (Decimal Subtract with CX Flag)
+# 16.3.35 - TODO: EXTS (Extend as Signed)
+
+# 16.3.36 - EXTU (Extend as Unsigned)
+:EXTU^Sz Rnd is (op_2_to_7=0b101011 & Sz); Rnd unimpl
+
+# 16.3.37 - TODO: ICBN (Increment Current Bank Number)
+# 16.3.38 - TODO: JMP (Jump)
+
+# 16.3.39 - JSR (Jump to Subroutine)
+:JSR EAd is (op=0b10101011); EAd unimpl
+
+# 16.3.40 - LDC (Load to CR Register)
+:LDC EAs, CR    is op=0b11111011; CR; EAs unimpl
+
+# 16.3.41 - LDM (Load to Multiple Registers)
+:LDM^Sz EAs, [REGLIST]    is (op_2_to_7=0b011101 & Sz); EAs; REGLIST unimpl
+
+# 16.3.42 - TODO: LINK (Link)
+
+# 16.3.43 - MOVA (Move Effective Address)
+:MOVA EAs, EAd  is op=0b10111111; (ea_a=0 ... & EAs); EAd unimpl
+:MOVA EAs, R0   is op=0b10111111 & R0; (ea_a=1 ... & EAs) unimpl
+
+# 16.3.44 - TODO: MOVF (Move Register 0 Fast)
+# 16.3.45 - TODO: MOVFP (Move from Peripheral)
+# 16.3.46 - TODO: MOVFPE (Move from Peripheral with E Clock)
+
+# 16.3.47 - MOV:G (Move Data from Source to Destination)
 :MOV^Sz EAs, EAd is op_2_to_7=0b000011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
 :MOV^Sz EAs, R0 is op_2_to_7=0b000011 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
-:ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
-
-# CLR (CLR)
-:CLR^Sz EAd is op_2_to_7=0b000101 & Sz; EAd unimpl
-
-:CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
+# 16.3.48 - MOV:Q (Move Quick)
 :MOV":Q"^Sz simm8, EAd is (op_2_to_7=0b000111 & Sz); simm8; EAd unimpl
 
-# ADD:R (Add Register)
-:ADD^Sz Rns, Rnd is (op_2_to_7=0b001000 & Sz); (Rns & Rnd) unimpl
-
-# SUB:R (Subtract Register)
-:SUB^Sz Rns, Rnd is (op_2_to_7=0b001001 & Sz); (Rns & Rnd) unimpl
-
-# CMP:R (Compare Register)
-:CMP Rns, Rnd is (op_2_to_7=0b001010 & Sz); (Rns & Rnd) unimpl
-
-# MOV:R (Move Register)
+# 16.3.49 - MOV:R (Move Register)
 :MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
-# ADD:RQ (Add Register Quick)
-:ADD^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & Sz); Rnd_4_to_7 & imm4 unimpl
+# 16.3.50 - TODO: MOV:RQ (Move Register Quick)
+# 16.3.51 - TODO: MOVS (Move with Sign Extension)
+# 16.3.52 - TODO: MOVTP (Move to Peripheral)
+# 16.3.53 - TODO: MOVTPE (Move to Peripheral with E Clock)
 
-# SUB:RQ (Subtract Register Quick)
+# 16.3.54 - MULXS (Multiply Extended as Signed)
+:MULXS EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
+:MULXS EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=1 ... & EAs) unimpl
+
+# 16.3.55 - MULXU (Multiply Extended as Unsigned)
+:MULXU EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
+:MULXU EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
+
+# 16.3.56 - TODO: NEG (Negate)
+# 16.3.57 - TODO: NEGX (Negate with CX Flag)
+# 16.3.58 - TODO: NOP (No Operation)
+# 16.3.59 - TODO: NOT (Not-Logical Complement)
+
+# 16.3.60 - OR (Or Logical)
+:OR^Sz EAs, EAd  is op_2_to_7=0b100010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:OR^Sz EAs, R0   is op_2_to_7=0b100010 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
+# 16.3.61 - ORC (Logical OR CR Register)
+:ORC EAs, CR  is op=0b11111001; CR; EAs unimpl
+
+# 16.3.62 - TODO: PGBN (Pull Global Bank Number)
+# 16.3.63 - TODO: RESET (Reset)
+# 16.3.64 - TODO: ROTL (Rotate Left)
+# 16.3.65 - TODO: ROTR (Rotate Right)
+# 16.3.66 - TODO: ROTXL (Rotate Left with CX Flag)
+# 16.3.67 - TODO: ROTXR (Rotate Right with CX Flag)
+# 16.3.68 - TODO: RTD (Return and Deallocate)
+
+# 16.3.69 - RTE (Return from Exception)
+:RTE is op=0b11110001 {
+    sr = *ssp;
+    ssp = ssp + 4;
+
+    PC = *ssp;
+    ssp = ssp + 4;
+
+    goto [PC];
+}
+
+# 16.3.70 - TODO: RTR (Return and Restore Condition Codes)
+
+# 16.3.71 - RTS (Return from Subroutine)
+:RTS    is (op=0b10111011) {
+    # TODO: get the correct stack pointer
+    PC = *ssp;
+    ssp = ssp + 4;
+
+    goto [PC];
+}
+
+# 16.3.72 - TODO: SCB (Subtract, Compare, and Branch Conditionally)
+# 16.3.73 - TODO: SCMP (String Compare According to Condition Codes)
+# 16.3.74 - TODO: SET (Set According to Condition Codes)
+# 16.3.75 - TODO: SHAL (Shift Arithmetically Left)
+# 16.3.76 - TODO: SHAR (Shift Arithmetically Right)
+
+# 16.3.77 - SHLL (Shift Logically Left)
+:SHLL^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b101 & shift_Rn); EAd unimpl
+:SHLL^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b101 & shift_Imm); EAd unimpl
+
+# 16.3.78 - TODO: SHLR (Shift Logically Right)
+# 16.3.79 - TODO: SLEEP (Sleep)
+# 16.3.80 - TODO: SMOV (String Move)
+# 16.3.81 - TODO: SSCH (String Search According to Condition Codes)
+# 16.3.82 - TODO: SSTR (String Store)
+
+# 16.3.83 - STC (Store CR Register)
+:STC CR, EAd    is op=0b11111100; CR; EAd unimpl
+
+# 16.3.84 - STM (Store Multiple Registers)
+:STM^Sz [REGLIST], EA    is op_2_to_7=0b011100 & Sz; EA; REGLIST unimpl
+
+# 16.3.85 - TODO: SUB:G (Subtract Binary)
+
+# 16.3.86 - SUB:R (Subtract Register)
+:SUB^Sz Rns, Rnd is (op_2_to_7=0b001001 & Sz); (Rns & Rnd) unimpl
+
+# 16.3.87 - SUB:RQ (Subtract Register Quick)
 :SUB^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001101 & Sz); Rnd_4_to_7 & imm4 unimpl
+
+# 16.3.88 - TODO: SUBS (Subtract with Sign Extension)
+# 16.3.89 - TODO: SUBX (Subtract with CX Flag)
+# 16.3.90 - TODO: SWAP (Swap Register Halves)
+# 16.3.91 - TODO: TAS (Test and Set)
+# 16.3.92 - TODO: TRAP (Trap According to Condition Codes)
+
+# 16.3.93 - TRAPA (Trap Always)
+:TRAPA imm4 is op=0b11110010; imm4 unimpl
+
+# 16.3.94 - TST (Test)
+:TST^Sz EAd is op_2_to_7=0b010110 & Sz; EAd unimpl
+
+# 16.3.95 - TODO: UNLK (Unlink)
+
+# 16.3.96 - XCH (Exchange Registers)
+:XCH Rnx, Rny is op=0b10110011; (Rnx & Rny) unimpl
+
+# 16.3.97 - TODO: XOR (Exclusive OR Logical)
+# 16.3.98 - TODO: XORC (Exclusive OR Control Register)
+
+@if defined(INCLUDE_TEMPS)
+:SUB_G  is (op=0x04 | op=0x05 | op=0x06) unimpl
+
+:ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
+
+:CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
 
 :CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
 :MOV_RQ is (op=0x3C | op=0x3D | op=0x3E) unimpl
@@ -267,112 +459,31 @@ EAd: EA is EA { export EA; }
 :ADDX   is (op=0x50 | op=0x51 | op=0x52) unimpl
 :SUBX   is (op=0x54 | op=0x55 | op=0x56) unimpl
 
-# TST (Test)
-:TST^Sz EAd is op_2_to_7=0b010110 & Sz; EAd unimpl
-
 :MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
 
-# SHAL (Shift Arithmetically Left)
-# TODO: implement
-
-# SHAR (Shift Arithmetically Right)
-# TODO: implement
-
-# SHLL (Shift Logically Left)
-:SHLL^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b101 & shift_Rn); EAd unimpl
-:SHLL^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b101 & shift_Imm); EAd unimpl
-
-# SHLR (Shift Logically Right)
-# TODO: implement
-
 :BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
-
-# TODO: determine size, parse ea, parse register list
-:STM^Sz [REGLIST], EA    is op_2_to_7=0b011100 & Sz; EA; REGLIST {
-
-}
-
-# TODO: parse register list
-:LDM^Sz EAs, [REGLIST]    is (op_2_to_7=0b011101 & Sz); EAs; REGLIST unimpl
 :MOVTPE is (op=0x78 | op=0x79 | op=0x7A) unimpl
 :MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
-# AND (AND Logical)
-:AND^Sz EAs, EAd  is op_2_to_7=0b100000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
-:AND^Sz EAs, R0   is op_2_to_7=0b100000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
-
 :XOR    is (op=0x84 | op=0x85 | op=0x86) unimpl
-
-# OR (OR Logical)
-:OR^Sz EAs, EAd  is op_2_to_7=0b100010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
-:OR^Sz EAs, R0   is op_2_to_7=0b100010 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 :NEG    is (op=0x8C | op=0x8D | op=0x8E) unimpl
 
 :NOT    is (op=0x90 | op=0x91 | op=0x92) unimpl
 :STRING is (op=0x94 | op=0x95 | op=0x96) unimpl
 
-# BRA (Branch Always)
-:BRA disp8  is (op_2_to_7=0b100110 & sz=0b00); disp8 {
-    goto disp8;
-}
-:BRA disp16 is (op_2_to_7=0b100110 & sz=0b01); disp16 {
-    goto disp16;
-}
-:BRA disp32 is (op_2_to_7=0b100110 & sz=0b10); disp32 {
-    goto disp32;
-}
-
 :JMP    is (op=0x9B) unimpl
 :NEGX   is (op=0x9C | op=0x9D | op=0x9E) unimpl
 
-# BEQ (Branch if Equal)
-:BEQ disp8  is (op_2_to_7=0b101000 & sz=0b00); disp8 unimpl
-:BEQ disp16 is (op_2_to_7=0b101000 & sz=0b01); disp16 unimpl
-:BEQ disp32 is (op_2_to_7=0b101000 & sz=0b10); disp32 unimpl
-
 :DADD   is (op=0xA3) unimpl
 
-# Bcc:G (Branch According to Condition Code)
-:B^CC disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & CC; disp8 unimpl
-:B^CC disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & CC; disp16 unimpl
-:B^CC disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & CC; disp32 unimpl
-
 :DSUB   is (op=0xA7) unimpl
-:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
-:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
-:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
-
-# JSR (Jump to Subroutine)
-:JSR EAd is (op=0b10101011); EAd unimpl
-
-# EXTU (Extend as Unsigned)
-:EXTU^Sz Rnd is (op_2_to_7=0b101011 & Sz); Rnd unimpl
 
 :DNEG   is (op=0xAF) unimpl
-
-:BNE disp8 is (op_2_to_7=0b101100 & sz=0b00); disp8 unimpl
-:BNE disp16 is (op_2_to_7=0b101100 & sz=0b01); disp16 unimpl
-:BNE disp32 is (op_2_to_7=0b101100 & sz=0b10); disp32 unimpl
-
-# XCH (Exchange Registers)
-:XCH Rnx, Rny is op=0b10110011; (Rnx & Rny) unimpl
-
 :SCB    is (op=0xB4 | op=0xB5 | op=0xB6) unimpl
 :SET    is (op=0xB7) unimpl
 :RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
-:RTS    is (op=0xBB) {
-    # TODO: get the correct stack pointer
-    PC = *ssp;
-    ssp = ssp + 4;
-
-    goto [PC];
-}
 :EXTS   is (op=0xBC | op=0xBD | op=0xBE) unimpl
-
-# MOVA (Move Effective Address)
-:MOVA EAs, EAd  is op=0b10111111; (ea_a=0 ... & EAs); EAd unimpl
-:MOVA EAs, R0   is op=0b10111111 & R0; (ea_a=1 ... & EAs) unimpl
 
 :LINK   is (op=0xD0 | op=0xD1 | op=0xD2) unimpl
 :UNLK   is (op=0xD3) unimpl
@@ -388,40 +499,18 @@ EAd: EA is EA { export EA; }
 :SWAP   is (op=0xEA | op=0xEB) unimpl
 :TAS    is (op=0xEC) unimpl
 
-# MULXS (Multiply Extended as Signed)
-:MULXS EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
-:MULXS EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=1 ... & EAs) unimpl
-
-# MULXS (Multiply Extended as Unsigned)
-:MULXU EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
-:MULXU EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
-
 :DIV    is (op=0xEF) unimpl
 
-:RESET  is op = 0xF0 unimpl
-:RTE    is op = 0xF1 {
-    sr = *ssp;
-    ssp = ssp + 4;
+:RESET  is op=0xF0 unimpl
 
-    PC = *ssp;
-    ssp  = ssp + 4;
-
-    goto [PC];
-}
-
-# TRAPA (Trap Always)
-:TRAPA imm4 is op=0b11110010; imm4 unimpl
-
-:TRAP   is op = 0xF3 unimpl
-:RTR    is op = 0xF4 unimpl
-:SLEEP  is op = 0xF5 unimpl
+:TRAP   is op=0xF3 unimpl
+:RTR    is op=0xF4 unimpl
+:SLEEP  is op=0xF5 unimpl
 # F6
 # F7
-:ANDC   is op = 0xF8 unimpl
-:ORC EAs, CR    is op = 0b11111001; CR; EAs unimpl
-:XORC   is op = 0xFA unimpl
-:LDC <EAs>, CR    is op = 0b11111011; CR; EAs unimpl
-:STC CR, <EAd>    is op = 0b11111100; CR; EAd unimpl
-:ICBN   is op = 0xFD unimpl
-:DCBN   is op = 0xFE unimpl
-:NOP    is op = 0xFF {}
+:ANDC   is op=0xF8 unimpl
+:XORC   is op=0xFA unimpl
+:ICBN   is op=0xFD unimpl
+:DCBN   is op=0xFE unimpl
+:NOP    is op=0xFF {}
+@endif
