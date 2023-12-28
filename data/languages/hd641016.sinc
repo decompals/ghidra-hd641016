@@ -53,10 +53,10 @@ define token mul8 (8)
     mul_7   = (7,7)
 ;
 
-define token shift8(8)
-    shift_Rn = (0,3)
-    shift_Imm = (0,4)
-    shift_fnc = (5,7)
+define token sar8(8)
+    sar_Rn = (0,3)
+    sar_Imm = (0,4)
+    sar_fnc = (5,7)
 ;
 
 define token reglist(16)
@@ -101,7 +101,7 @@ define token ea8b (8)
     ea8b_Sf = (4,5)
 ;
 
-attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 shift_Rn ea8a_Rn ea8b_Xm] [
+attach variables [ Rn Rnd Rns Rnx Rny Rnd_4_to_7 sar_Rn ea8a_Rn ea8b_Xm] [
 	R0  R1  R2  R3  R4  R5  R6  R7
 	R8  R9 R10 R11 R12  R13  R14  R15
 ];
@@ -359,7 +359,8 @@ EAd: EA is EA { export EA; }
 # 16.3.49 - MOV:R (Move Register)
 :MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
-# 16.3.50 - TODO: MOV:RQ (Move Register Quick)
+# 16.3.50 - MOV:RQ (Move Register Quick)
+:MOV^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001111 & Sz); Rnd_4_to_7 & imm4 unimpl
 
 # 16.3.51 - MOVS (Move with Sign Extension)
 :MOVS^Sz EAs, EAd   is op_2_to_7=0b010011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
@@ -390,7 +391,11 @@ EAd: EA is EA { export EA; }
 
 # 16.3.62 - TODO: PGBN (Pull Global Bank Number)
 # 16.3.63 - TODO: RESET (Reset)
-# 16.3.64 - TODO: ROTL (Rotate Left)
+
+# 16.3.64 - ROTL (Rotate Left)
+:ROTL^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b110 & sar_Rn); EAd unimpl
+:ROTL^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b110 & sar_Imm); EAd unimpl
+
 # 16.3.65 - TODO: ROTR (Rotate Right)
 # 16.3.66 - TODO: ROTXL (Rotate Left with CX Flag)
 # 16.3.67 - TODO: ROTXR (Rotate Right with CX Flag)
@@ -425,12 +430,12 @@ EAd: EA is EA { export EA; }
 # 16.3.76 - TODO: SHAR (Shift Arithmetically Right)
 
 # 16.3.77 - SHLL (Shift Logically Left)
-:SHLL^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b101 & shift_Rn); EAd unimpl
-:SHLL^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b101 & shift_Imm); EAd unimpl
+:SHLL^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b101 & sar_Rn); EAd unimpl
+:SHLL^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b101 & sar_Imm); EAd unimpl
 
 # 16.3.78 - SHLR (Shift Logically Right)
-:SHLR^Sz shift_Rn, EAd is op_2_to_7=0b011000 & Sz; (shift_fnc=0b001 & shift_Rn); EAd unimpl
-:SHLR^Sz shift_Imm, EAd is op_2_to_7=0b011001 & Sz; (shift_fnc=0b001 & shift_Imm); EAd unimpl
+:SHLR^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b001 & sar_Rn); EAd unimpl
+:SHLR^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b001 & sar_Imm); EAd unimpl
 
 # 16.3.79 - TODO: SLEEP (Sleep)
 # 16.3.80 - TODO: SMOV (String Move)
@@ -484,7 +489,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
 
 :CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
-:MOV_RQ is (op=0x3C | op=0x3D | op=0x3E) unimpl
 
 :ADDS   is (op=0x40 | op=0x41 | op=0x42) unimpl
 :SUBS   is (op=0x44 | op=0x45 | op=0x46) unimpl
