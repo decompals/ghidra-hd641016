@@ -59,6 +59,12 @@ define token sar8(8)
     sar_fnc = (5,7)
 ;
 
+define token bit8(8)
+    bit_Rn = (0,3)
+    bit_Imm = (0,4)
+    bit_fnc = (5,6)
+;
+
 define token reglist(16)
     reglist_r0 = (0,0)
     reglist_r1 = (1,1)
@@ -299,7 +305,10 @@ EAd: EA is EA { export EA; }
 :BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
 :BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
 
-# 16.3.21 - TODO: BTST (Bit Test)
+# 16.3.21 - BTST (Bit Test)
+:BTST^Sz bit_Rn, EAd is op_2_to_7=0b011010 & Sz; (bit_fnc=0b11 & bit_Rn); EAd unimpl
+:BTST^Sz bit_Imm, EAd is op_2_to_7=0b011011 & Sz; (bit_fnc=0b11 & bit_Imm); EAd unimpl
+
 # 16.3.22 - TODO: CGBN (Push and Change Global Bank Number)
 
 # 16.3.23 - CLR (Clear)
@@ -347,7 +356,10 @@ EAd: EA is EA { export EA; }
 
 # 16.3.44 - TODO: MOVF (Move Register 0 Fast)
 # 16.3.45 - TODO: MOVFP (Move from Peripheral)
-# 16.3.46 - TODO: MOVFPE (Move from Peripheral with E Clock)
+
+# 16.3.46 - MOVFPE (Move from Peripheral with E Clock)
+:MOVFPE^Sz EAs, EAd is op_2_to_7=0b011111 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:MOVFPE^Sz EAs, R0  is op_2_to_7=0b011111 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.47 - MOV:G (Move Data from Source to Destination)
 :MOV^Sz EAs, EAd is op_2_to_7=0b000011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
@@ -367,7 +379,10 @@ EAd: EA is EA { export EA; }
 :MOVS^Sz EAs, R0    is op_2_to_7=0b010011 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.52 - TODO: MOVTP (Move to Peripheral)
-# 16.3.53 - TODO: MOVTPE (Move to Peripheral with E Clock)
+
+# 16.3.53 - MOVTPE (Move to Peripheral with E Clock)
+:MOVTPE^Sz EAs, EAd   is op_2_to_7=0b011110 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:MOVTPE^Sz EAs, R0    is op_2_to_7=0b011110 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.54 - MULXS (Multiply Extended as Signed)
 :MULXS EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
@@ -504,7 +519,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
 
 :BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
-:MOVTPE is (op=0x78 | op=0x79 | op=0x7A) unimpl
 :MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
 :XOR    is (op=0x84 | op=0x85 | op=0x86) unimpl
