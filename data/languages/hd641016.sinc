@@ -199,9 +199,9 @@ with EA: {
 
     # 2. Register indirect
     : "@"Rn is Rn & ea_6=0b0 & ea_Sd=0b00 { }
-    : "@("imm8, Rn) is Rn & ea_6=0b0 & ea_Sd=0b01; imm8 { }
-    : "@("imm16, Rn) is Rn & ea_6=0b0 & ea_Sd=0b10; imm16 { }
-    : "@("imm32, Rn) is Rn & ea_6=0b0 & ea_Sd=0b11; imm32 { }
+    : "@("simm8, Rn) is Rn & ea_6=0b0 & ea_Sd=0b01; simm8 { }
+    : "@("simm16, Rn) is Rn & ea_6=0b0 & ea_Sd=0b10; simm16 { }
+    : "@("simm32, Rn) is Rn & ea_6=0b0 & ea_Sd=0b11; simm32 { }
 
     # 3. Register indirect auto-increment
     : "@"Rn"+" is Rn & ea_4_to_6=0b101 { }
