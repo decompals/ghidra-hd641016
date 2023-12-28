@@ -48,9 +48,9 @@ define token data8 (8)
     Rnd_4_to_7 = (4,7)
 ;
 
-define token mul8 (8)
-    mul_fnc = (4,6)
-    mul_7   = (7,7)
+define token muldiv8 (8)
+    muldiv_fnc = (4,6)
+    muldiv_7   = (7,7)
 ;
 
 define token sar8(8)
@@ -245,7 +245,8 @@ EAd: EA is EA { export EA; }
 :ADD^Sz EAs, EAd is op_2_to_7=0b000000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
 :ADD^Sz EAs, R0 is op_2_to_7=0b000000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
-# 16.3.2 - TODO: ADD:Q (Add Quick)
+# 16.3.2 - ADD:Q (Add Quick)
+:ADD^Sz simm8, EAd is (op_2_to_7=0b000100 & Sz); simm8; EAd unimpl
 
 # 16.3.3 - ADD:R (Add Register)
 :ADD^Sz Rns, Rnd is (op_2_to_7=0b001000 & Sz); (Rns & Rnd) unimpl
@@ -268,7 +269,9 @@ EAd: EA is EA { export EA; }
 :B^CC disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & CC; disp16 unimpl
 :B^CC disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & CC; disp32 unimpl
 
-# 16.3.10 - TODO: BCLR (Bit Test and Clear)
+# 16.3.10 - BCLR (Bit Test and Clear)
+:BCLR^Sz bit_Rn, EAd is op_2_to_7=0b011010 & Sz; (bit_fnc=0b10 & bit_Rn); EAd unimpl
+:BCLR^Sz bit_Imm, EAd is op_2_to_7=0b011011 & Sz; (bit_fnc=0b10 & bit_Imm); EAd unimpl
 
 # 16.3.11 - BEQ (Branch If Equal)
 :BEQ disp8  is (op_2_to_7=0b101000 & sz=0b00); disp8 unimpl
@@ -298,7 +301,9 @@ EAd: EA is EA { export EA; }
     goto disp32;
 }
 
-# 16.3.19 - TODO: BSET (Bit Test and Set)
+# 16.3.19 - BSET (Bit Test and Set)
+:BSET^Sz bit_Rn, EAd is op_2_to_7=0b011010 & Sz; (bit_fnc=0b00 & bit_Rn); EAd unimpl
+:BSET^Sz bit_Imm, EAd is op_2_to_7=0b011011 & Sz; (bit_fnc=0b00 & bit_Imm); EAd unimpl
 
 # 16.3.20 - BSR (Branch to Subroutine)
 :BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
@@ -318,7 +323,8 @@ EAd: EA is EA { export EA; }
 :CMP^Sz EAs, EAd is op_2_to_7=0b000010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
 :CMP^Sz EAs, R0 is op_2_to_7=0b000010 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
-# 16.3.25 - TODO: CMP:Q (Compare Quick)
+# 16.3.25 - CMP:Q (Compare Quick)
+:CMP^Sz simm8, EAd is (op_2_to_7=0b000110 & Sz); simm8; EAd unimpl
 
 # 16.3.26 - CMP:R (Compare Register)
 :CMP Rns, Rnd is (op_2_to_7=0b001010 & Sz); (Rns & Rnd) unimpl
@@ -327,8 +333,15 @@ EAd: EA is EA { export EA; }
 # 16.3.28 - TODO: CMPS (Compare with Sign Extension)
 # 16.3.29 - TODO: DADD (Decimal ADD with CX Flag)
 # 16.3.30 - TODO: DCBN (Decrement Current Bank Number)
-# 16.3.31 - TODO: DIVXS (Divide Extented as Signed)
-# 16.3.32 - TODO: DIVXU (Divide Extended as Unsigned)
+
+# 16.3.31 - DIVXS (Divide Extented as Signed)
+:DIVXS EAs, EAd is op=0b11101111;       (muldiv_7=0 & (muldiv_fnc=0b000 | muldiv_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
+:DIVXS EAs, R0  is op=0b11101111 & R0;  (muldiv_7=0 & (muldiv_fnc=0b000 | muldiv_fnc=0b001)); (ea_a=1 ... & EAs) unimpl
+
+# 16.3.32 - DIVXU (Divide Extended as Unsigned)
+:DIVXU EAs, EAd is op=0b11101111;       (muldiv_7=0 & (muldiv_fnc=0b100 | muldiv_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
+:DIVXU EAs, R0  is op=0b11101111 & R0;  (muldiv_7=0 & (muldiv_fnc=0b100 | muldiv_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
+
 # 16.3.33 - TODO: DNEG (Decimal Negate with CX Flag)
 # 16.3.34 - TODO: DSUB (Decimal Subtract with CX Flag)
 # 16.3.35 - TODO: EXTS (Extend as Signed)
@@ -348,7 +361,10 @@ EAd: EA is EA { export EA; }
 # 16.3.41 - LDM (Load to Multiple Registers)
 :LDM^Sz EAs, [REGLIST]    is (op_2_to_7=0b011101 & Sz); EAs; REGLIST unimpl
 
-# 16.3.42 - TODO: LINK (Link)
+# 16.3.42 - LINK (Link)
+:LINK Rn, imm8  is (op_2_to_7=0b110100 & sz=0b00); Rn; imm8 unimpl
+:LINK Rn, imm16 is (op_2_to_7=0b110100 & sz=0b01); Rn; imm16 unimpl
+:LINK Rn, imm32 is (op_2_to_7=0b110100 & sz=0b10); Rn; imm32 unimpl
 
 # 16.3.43 - MOVA (Move Effective Address)
 :MOVA EAs, EAd  is op=0b10111111; (ea_a=0 ... & EAs); EAd unimpl
@@ -385,17 +401,19 @@ EAd: EA is EA { export EA; }
 :MOVTPE^Sz EAs, R0    is op_2_to_7=0b011110 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.54 - MULXS (Multiply Extended as Signed)
-:MULXS EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
-:MULXS EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b000 | mul_fnc=0b001)); (ea_a=1 ... & EAs) unimpl
+:MULXS EAs, EAd is op=0b11101110;       (muldiv_7=0 & (muldiv_fnc=0b000 | muldiv_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
+:MULXS EAs, R0  is op=0b11101110 & R0;  (muldiv_7=0 & (muldiv_fnc=0b000 | muldiv_fnc=0b001)); (ea_a=1 ... & EAs) unimpl
 
 # 16.3.55 - MULXU (Multiply Extended as Unsigned)
-:MULXU EAs, EAd is op=0b11101110;       (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
-:MULXU EAs, R0  is op=0b11101110 & R0;  (mul_7=0 & (mul_fnc=0b100 | mul_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
+:MULXU EAs, EAd is op=0b11101110;       (muldiv_7=0 & (muldiv_fnc=0b100 | muldiv_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
+:MULXU EAs, R0  is op=0b11101110 & R0;  (muldiv_7=0 & (muldiv_fnc=0b100 | muldiv_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
 
 # 16.3.56 - TODO: NEG (Negate)
 # 16.3.57 - TODO: NEGX (Negate with CX Flag)
 # 16.3.58 - TODO: NOP (No Operation)
-# 16.3.59 - TODO: NOT (Not-Logical Complement)
+
+# 16.3.59 - NOT (Not-Logical Complement)
+:NOT^Sz EAd is op_2_to_7=0b100100 & Sz; EAd unimpl
 
 # 16.3.60 - OR (Or Logical)
 :OR^Sz EAs, EAd  is op_2_to_7=0b100010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
@@ -494,19 +512,19 @@ swap_S: ".W" is swap_s=0b1 { }
 # 16.3.94 - TST (Test)
 :TST^Sz EAd is op_2_to_7=0b010110 & Sz; EAd unimpl
 
-# 16.3.95 - TODO: UNLK (Unlink)
+# 16.3.95 - UNLK (Unlink)
+:UNLK Rn is (op=0b11010011); Rn unimpl
 
 # 16.3.96 - XCH (Exchange Registers)
 :XCH Rnx, Rny is op=0b10110011; (Rnx & Rny) unimpl
 
-# 16.3.97 - TODO: XOR (Exclusive OR Logical)
+# 16.3.97 - XOR (Exclusive OR Logical)
+:XOR^Sz EAs, EAd    is op_2_to_7=0b100001 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:XOR^Sz EAs, R0     is op_2_to_7=0b100001 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
 # 16.3.98 - TODO: XORC (Exclusive OR Control Register)
 
 @if defined(INCLUDE_TEMPS)
-:ADD_Q  is (op=0x10 | op=0x11 | op=0x12) unimpl
-
-:CMP_Q  is (op=0x18 | op=0x19 | op=0x1A) unimpl
-
 :CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
 
 :ADDS   is (op=0x40 | op=0x41 | op=0x42) unimpl
@@ -521,11 +539,8 @@ swap_S: ".W" is swap_s=0b1 { }
 :BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
 :MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
-:XOR    is (op=0x84 | op=0x85 | op=0x86) unimpl
-
 :NEG    is (op=0x8C | op=0x8D | op=0x8E) unimpl
 
-:NOT    is (op=0x90 | op=0x91 | op=0x92) unimpl
 :STRING is (op=0x94 | op=0x95 | op=0x96) unimpl
 
 :JMP    is (op=0x9B) unimpl
@@ -540,8 +555,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
 :EXTS   is (op=0xBC | op=0xBD | op=0xBE) unimpl
 
-:LINK   is (op=0xD0 | op=0xD1 | op=0xD2) unimpl
-:UNLK   is (op=0xD3) unimpl
 :BFEXT  is (op=0xD4) unimpl
 :BFINS  is (op=0xD5) unimpl
 :BFSCH  is (op=0xD6) unimpl
@@ -552,8 +565,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :CGBN   is (op=0xE4 | op=0xE5 | op=0xE6 | op=0xE7) unimpl
 :PGBN   is (op=0xE8 | op=0xE9) unimpl
 :TAS    is (op=0xEC) unimpl
-
-:DIV    is (op=0xEF) unimpl
 
 :RESET  is op=0xF0 unimpl
 
