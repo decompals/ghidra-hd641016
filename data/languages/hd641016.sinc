@@ -261,9 +261,6 @@ EAd: EA is EA { export EA; }
 :B^CC disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & CC; disp8 unimpl
 :B^CC disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & CC; disp16 unimpl
 :B^CC disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & CC; disp32 unimpl
-:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
-:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
-:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
 
 # 16.3.10 - TODO: BCLR (Bit Test and Clear)
 
@@ -296,7 +293,12 @@ EAd: EA is EA { export EA; }
 }
 
 # 16.3.19 - TODO: BSET (Bit Test and Set)
-# 16.3.20 - TODO: BSR (Branch to Subroutine)
+
+# 16.3.20 - BSR (Branch to Subroutine)
+:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
+:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
+:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
+
 # 16.3.21 - TODO: BTST (Bit Test)
 # 16.3.22 - TODO: CGBN (Push and Change Global Bank Number)
 
