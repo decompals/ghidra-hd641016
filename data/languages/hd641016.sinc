@@ -6,7 +6,15 @@ define space register type=register_space size=4;
 
 define register offset=0 size=4
 [R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15];
-define register offset=0x100 size=4 [PC ssp bsp ebr rbr ibr cbnr sr ccr bmr gbnr vbnr];
+define register offset=0x100 size=4 [PC ssp bsp ebr rbr ibr cbnr sr CCR bmr gbnr vbnr];
+
+define bitrange
+    C_FLAG  = CCR[0,1]
+    V_FLAG  = CCR[1,1]
+    Z_FLAG  = CCR[2,1]
+    N_FLAG  = CCR[3,1]
+    CX_FLAG = CCR[4,1]
+;
 
 # 8 – token size
 # field op includes bits 0 to 7
@@ -168,22 +176,22 @@ CR: "RBR"   is cr_code=0b11000001 { }
 CR: "USP"   is cr_code=0b11000010 { }
 CR: "IBR"   is cr_code=0b11000011 { }
 
-CC: "CC"    is cc=0b0100 { }
-CC: "CS"    is cc=0b0101 { }
-CC: "NE"    is cc=0b0110 { }
-CC: "EQ"    is cc=0b0111 { }
-CC: "GE"    is cc=0b1100 { }
-CC: "LT"    is cc=0b1101 { }
-CC: "GT"    is cc=0b1110 { }
-CC: "LE"    is cc=0b1111 { }
-CC: "HI"    is cc=0b0010 { }
-CC: "LS"    is cc=0b0011 { }
-CC: "PL"    is cc=0b1010 { }
-CC: "MI"    is cc=0b1011 { }
-CC: "VC"    is cc=0b1000 { }
-CC: "VS"    is cc=0b1001 { }
-CC: "T"     is cc=0b0000 { }
-CC: "F"     is cc=0b0001 { }
+Condition: "CC"    is cc=0b0100 { local tmp:1 = (C_FLAG==0); export tmp; }
+Condition: "CS"    is cc=0b0101 { local tmp:1 = (C_FLAG!=0); export tmp; }
+Condition: "NE"    is cc=0b0110 { local tmp:1 = (Z_FLAG==0); export tmp; }
+Condition: "EQ"    is cc=0b0111 { local tmp:1 = (Z_FLAG!=0); export tmp; }
+Condition: "GE"    is cc=0b1100 { local tmp:1 = 0; export tmp; } # TODO: determine condition
+Condition: "LT"    is cc=0b1101 { local tmp:1 = 0; export tmp; } # TODO: determine condition
+Condition: "GT"    is cc=0b1110 { local tmp:1 = 0; export tmp; } # TODO: determine condition
+Condition: "LE"    is cc=0b1111 { local tmp:1 = 0; export tmp; } # TODO: determine condition
+Condition: "HI"    is cc=0b0010 { local tmp:1 = 0; export tmp; } # TODO: determine condition
+Condition: "LS"    is cc=0b0011 { local tmp:1 = 0; export tmp; } # TODO: determine condition
+Condition: "PL"    is cc=0b1010 { local tmp:1 = (N_FLAG==0); export tmp; }
+Condition: "MI"    is cc=0b1011 { local tmp:1 = (N_FLAG==1); export tmp; }
+Condition: "VC"    is cc=0b1000 { local tmp:1 = (V_FLAG==0); export tmp; }
+Condition: "VS"    is cc=0b1001 { local tmp:1 = (V_FLAG==0); export tmp; }
+Condition: "T"     is cc=0b0000 { local tmp:1 = 1; export tmp; }
+Condition: "F"     is cc=0b0001 { local tmp:1 = 0; export tmp; }
 
 Sz: ".B" is sz=0b00 { }
 Sz: ".W" is sz=0b01 { }
@@ -252,7 +260,12 @@ EAd: EA is EA { export EA; }
 :ADD^Sz Rns, Rnd is (op_2_to_7=0b001000 & Sz); (Rns & Rnd) unimpl
 
 # 16.3.4 - ADD:RQ (Add Register Quick)
-:ADD^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & Sz); Rnd_4_to_7 & imm4 unimpl
+:ADD.B imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & sz=0b00); Rnd_4_to_7 & imm4 unimpl
+:ADD.W imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & sz=0b01); Rnd_4_to_7 & imm4 {
+    # TODO: size, overflow and condition codes
+    Rnd_4_to_7 = Rnd_4_to_7 + imm4;
+}
+:ADD.L imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & sz=0b10); Rnd_4_to_7 & imm4 unimpl
 
 # 16.3.5 - TODO: ADDS (Add with Sign Extension)
 # 16.3.6 - TODO: ADDX (Add with CX Flag)
@@ -265,9 +278,18 @@ EAd: EA is EA { export EA; }
 :ANDC EAs, CR    is op=0b11111000; CR; EAs unimpl
 
 # 16.3.9 - Bcc:G (Branch According to Condition Code)
-:B^CC disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & CC; disp8 unimpl
-:B^CC disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & CC; disp16 unimpl
-:B^CC disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & CC; disp32 unimpl
+:B^Condition disp8  is (op_2_to_7=0b101001 & sz=0b00); cc & Condition; disp8 {
+    if (Condition)
+        goto disp8;
+}
+:B^Condition disp16 is (op_2_to_7=0b101001 & sz=0b01); cc & Condition; disp16 {
+    if (Condition)
+        goto disp16;
+}
+:B^Condition disp32 is (op_2_to_7=0b101001 & sz=0b10); cc & Condition; disp32 {
+    if (Condition)
+        goto disp32;
+}
 
 # 16.3.10 - BCLR (Bit Test and Clear)
 :BCLR^Sz bit_Rn, EAd is op_2_to_7=0b011010 & Sz; (bit_fnc=0b10 & bit_Rn); EAd unimpl
@@ -306,9 +328,15 @@ EAd: EA is EA { export EA; }
 :BSET^Sz bit_Imm, EAd is op_2_to_7=0b011011 & Sz; (bit_fnc=0b00 & bit_Imm); EAd unimpl
 
 # 16.3.20 - BSR (Branch to Subroutine)
-:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 unimpl
-:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 unimpl
-:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 unimpl
+:BSR disp8  is (op_2_to_7=0b101010 & sz=0b00); disp8 {
+    call disp8;
+}
+:BSR disp16 is (op_2_to_7=0b101010 & sz=0b01); disp16 {
+    call disp16;
+}
+:BSR disp32 is (op_2_to_7=0b101010 & sz=0b10); disp32 {
+    call disp32;
+}
 
 # 16.3.21 - BTST (Bit Test)
 :BTST^Sz bit_Rn, EAd is op_2_to_7=0b011010 & Sz; (bit_fnc=0b11 & bit_Rn); EAd unimpl
@@ -449,17 +477,13 @@ EAd: EA is EA { export EA; }
 
 # 16.3.71 - RTS (Return from Subroutine)
 :RTS    is (op=0b10111011) {
-    # TODO: get the correct stack pointer
-    PC = *ssp;
-    ssp = ssp + 4;
-
-    goto [PC];
+    return [PC];
 }
 
 # 16.3.72 - SCB (Subtract, Compare, and Branch Conditionally)
-:SCB/CC Rnd_4_to_7, disp8   is (op_2_to_7=0b101101 & sz=0b00); Rnd_4_to_7 & cc & CC; disp8 unimpl
-:SCB/CC Rnd_4_to_7, disp16  is (op_2_to_7=0b101101 & sz=0b01); Rnd_4_to_7 & cc & CC; disp16 unimpl
-:SCB/CC Rnd_4_to_7, disp32  is (op_2_to_7=0b101101 & sz=0b10); Rnd_4_to_7 & cc & CC; disp32 unimpl
+:SCB/Condition Rnd_4_to_7, disp8   is (op_2_to_7=0b101101 & sz=0b00); Rnd_4_to_7 & cc & Condition; disp8 unimpl
+:SCB/Condition Rnd_4_to_7, disp16  is (op_2_to_7=0b101101 & sz=0b01); Rnd_4_to_7 & cc & Condition; disp16 unimpl
+:SCB/Condition Rnd_4_to_7, disp32  is (op_2_to_7=0b101101 & sz=0b10); Rnd_4_to_7 & cc & Condition; disp32 unimpl
 
 # 16.3.73 - TODO: SCMP (String Compare According to Condition Codes)
 # 16.3.74 - TODO: SET (Set According to Condition Codes)
@@ -516,7 +540,11 @@ swap_S: ".W" is swap_s=0b1 { }
 :UNLK Rn is (op=0b11010011); Rn unimpl
 
 # 16.3.96 - XCH (Exchange Registers)
-:XCH Rnx, Rny is op=0b10110011; (Rnx & Rny) unimpl
+:XCH Rnx, Rny is op=0b10110011; (Rnx & Rny) {
+    local tmp:4 = Rnx;
+    Rnx = Rny;
+    Rny = tmp;
+}
 
 # 16.3.97 - XOR (Exclusive OR Logical)
 :XOR^Sz EAs, EAd    is op_2_to_7=0b100001 & Sz; (ea_a=0 ... & EAs); EAd unimpl
