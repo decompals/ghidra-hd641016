@@ -296,9 +296,18 @@ EAd: EA is EA { export EA; }
 :BCLR^Sz bit_Imm, EAd is op_2_to_7=0b011011 & Sz; (bit_fnc=0b10 & bit_Imm); EAd unimpl
 
 # 16.3.11 - BEQ (Branch If Equal)
-:BEQ disp8  is (op_2_to_7=0b101000 & sz=0b00); disp8 unimpl
-:BEQ disp16 is (op_2_to_7=0b101000 & sz=0b01); disp16 unimpl
-:BEQ disp32 is (op_2_to_7=0b101000 & sz=0b10); disp32 unimpl
+:BEQ disp8  is (op_2_to_7=0b101000 & sz=0b00); disp8 {
+    if (Z_FLAG == 1)
+        goto disp8;
+}
+:BEQ disp16 is (op_2_to_7=0b101000 & sz=0b01); disp16 {
+    if (Z_FLAG == 1)
+        goto disp16;
+}
+:BEQ disp32 is (op_2_to_7=0b101000 & sz=0b10); disp32 {
+    if (Z_FLAG == 1)
+        goto disp32;
+}
 
 # 16.3.12 - TODO: BFEXT (Bit Field Data Extract)
 # 16.3.13 - TODO: BFINS (Bit Field Data Insert)
@@ -306,9 +315,18 @@ EAd: EA is EA { export EA; }
 # 16.3.15 - TODO: BFSCH (Bit Field Data Search)
 
 # 16.3.16 - BNE (Branch If Not Equal)
-:BNE disp8 is (op_2_to_7=0b101100 & sz=0b00); disp8 unimpl
-:BNE disp16 is (op_2_to_7=0b101100 & sz=0b01); disp16 unimpl
-:BNE disp32 is (op_2_to_7=0b101100 & sz=0b10); disp32 unimpl
+:BNE disp8 is (op_2_to_7=0b101100 & sz=0b00); disp8 {
+    if (Z_FLAG == 0)
+        goto disp8;
+}
+:BNE disp16 is (op_2_to_7=0b101100 & sz=0b01); disp16 {
+    if (Z_FLAG == 0)
+        goto disp16;
+}
+:BNE disp32 is (op_2_to_7=0b101100 & sz=0b10); disp32 {
+    if (Z_FLAG == 0)
+        goto disp32;
+}
 
 # 16.3.17 - TODO: BNOT (Bit Test and Not)
 
