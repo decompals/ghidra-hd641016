@@ -423,7 +423,11 @@ EAd: EA is EA { export EA; }
     goto [PC];
 }
 
-# 16.3.72 - TODO: SCB (Subtract, Compare, and Branch Conditionally)
+# 16.3.72 - SCB (Subtract, Compare, and Branch Conditionally)
+:SCB/CC Rnd_4_to_7, disp8   is (op_2_to_7=0b101101 & sz=0b00); Rnd_4_to_7 & cc & CC; disp8 unimpl
+:SCB/CC Rnd_4_to_7, disp16  is (op_2_to_7=0b101101 & sz=0b01); Rnd_4_to_7 & cc & CC; disp16 unimpl
+:SCB/CC Rnd_4_to_7, disp32  is (op_2_to_7=0b101101 & sz=0b10); Rnd_4_to_7 & cc & CC; disp32 unimpl
+
 # 16.3.73 - TODO: SCMP (String Compare According to Condition Codes)
 # 16.3.74 - TODO: SET (Set According to Condition Codes)
 # 16.3.75 - TODO: SHAL (Shift Arithmetically Left)
@@ -518,7 +522,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :DSUB   is (op=0xA7) unimpl
 
 :DNEG   is (op=0xAF) unimpl
-:SCB    is (op=0xB4 | op=0xB5 | op=0xB6) unimpl
 :SET    is (op=0xB7) unimpl
 :RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
 :EXTS   is (op=0xBC | op=0xBD | op=0xBE) unimpl
