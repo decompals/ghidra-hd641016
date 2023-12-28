@@ -8,6 +8,7 @@
     version="1.0"
     slafile="hd641016.sla"
     processorspec="hd641016.pspec"
+    manualindexfile="../manuals/hd641016.idx"
     id="hd641016:BE:32:default"
   >
     <description>Hitachi HD641016</description>
