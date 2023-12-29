@@ -402,7 +402,10 @@ EAd: EA is EA { export EA; }
 
 # 16.3.33 - TODO: DNEG (Decimal Negate with CX Flag)
 # 16.3.34 - TODO: DSUB (Decimal Subtract with CX Flag)
-# 16.3.35 - TODO: EXTS (Extend as Signed)
+
+# 16.3.35 - EXTS (Extend as Signed)
+:EXTS Rnd is (op_2_to_7=0b101111 & Sz); Rnd unimpl
+:EXTS.B Rnd is (op_2_to_7=0b101111 & sz=0b10); Rnd unimpl
 
 # 16.3.36 - EXTU (Extend as Unsigned)
 :EXTU^Sz Rnd is (op_2_to_7=0b101011 & Sz); Rnd unimpl
@@ -470,7 +473,9 @@ EAd: EA is EA { export EA; }
 :NEG^Sz EAd is op_2_to_7=0b100011 & Sz; EAd unimpl
 
 # 16.3.57 - TODO: NEGX (Negate with CX Flag)
-# 16.3.58 - TODO: NOP (No Operation)
+
+# 16.3.58 - NOP (No Operation)
+:NOP is op=0b11111111 {}
 
 # 16.3.59 - NOT (Not-Logical Complement)
 :NOT^Sz EAd is op_2_to_7=0b100100 & Sz; EAd unimpl
@@ -618,7 +623,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :DNEG   is (op=0xAF) unimpl
 :SET    is (op=0xB7) unimpl
 :RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
-:EXTS   is (op=0xBC | op=0xBD | op=0xBE) unimpl
 
 :BFEXT  is (op=0xD4) unimpl
 :BFINS  is (op=0xD5) unimpl
@@ -641,5 +645,4 @@ swap_S: ".W" is swap_s=0b1 { }
 :XORC   is op=0xFA unimpl
 :ICBN   is op=0xFD unimpl
 :DCBN   is op=0xFE unimpl
-:NOP    is op=0xFF {}
 @endif
