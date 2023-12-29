@@ -42,6 +42,7 @@ define token data8 (8)
     cc      = (0,3)
     cr_code = (0,7)
     imm4    = (0,3)
+    simm4    = (0,3) signed
     imm5    = (0,4)
     imm8    = (0,7)
     imm8_b  = (0,7)
@@ -387,7 +388,9 @@ EAd: EA is EA { export EA; }
 # 16.3.26 - CMP:R (Compare Register)
 :CMP Rns, Rnd is (op_2_to_7=0b001010 & Sz); (Rns & Rnd) unimpl
 
-# 16.3.27 - TODO: CMP:RQ (Compare Register Quick)
+# 16.3.27 - CMP:RQ (Compare Register Quick)
+:CMP^Sz simm4, Rnd_4_to_7 is (op_2_to_7=0b001110 & Sz); Rnd_4_to_7 & simm4 unimpl
+
 # 16.3.28 - TODO: CMPS (Compare with Sign Extension)
 # 16.3.29 - TODO: DADD (Decimal ADD with CX Flag)
 # 16.3.30 - TODO: DCBN (Decrement Current Bank Number)
@@ -446,7 +449,7 @@ EAd: EA is EA { export EA; }
 :MOV^Sz Rns, Rnd is (op_2_to_7=0b001011 & Sz); (Rns & Rnd) unimpl
 
 # 16.3.50 - MOV:RQ (Move Register Quick)
-:MOV^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001111 & Sz); Rnd_4_to_7 & imm4 unimpl
+:MOV^Sz simm4, Rnd_4_to_7 is (op_2_to_7=0b001111 & Sz); Rnd_4_to_7 & simm4 unimpl
 
 # 16.3.51 - MOVS (Move with Sign Extension)
 :MOVS^Sz EAs, EAd   is op_2_to_7=0b010011 & Sz; (ea_a=0 ... & EAs); EAd unimpl
@@ -592,8 +595,6 @@ swap_S: ".W" is swap_s=0b1 { }
 # 16.3.98 - TODO: XORC (Exclusive OR Control Register)
 
 @if defined(INCLUDE_TEMPS)
-:CMP_RQ is (op=0x38 | op=0x39 | op=0x3A) unimpl
-
 :ADDS   is (op=0x40 | op=0x41 | op=0x42) unimpl
 :SUBS   is (op=0x44 | op=0x45 | op=0x46) unimpl
 :CMPS   is (op=0x48 | op=0x49 | op=0x4A) unimpl
