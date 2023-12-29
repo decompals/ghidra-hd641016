@@ -281,7 +281,10 @@ EAd: EA is EA { export EA; }
 :ADD.L imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & sz=0b10); Rnd_4_to_7 & imm4 unimpl
 
 # 16.3.5 - TODO: ADDS (Add with Sign Extension)
-# 16.3.6 - TODO: ADDX (Add with CX Flag)
+
+# 16.3.6 - ADDX (Add with CX Flag)
+:ADDX^Sz EAs, EAd  is op_2_to_7=0b010100 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:ADDX^Sz EAs, R0   is op_2_to_7=0b010100 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.7 - AND (AND Logical)
 :AND^Sz EAs, EAd  is op_2_to_7=0b100000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
@@ -498,7 +501,11 @@ EAd: EA is EA { export EA; }
 :ROTL^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b110 & sar_Imm); EAd unimpl
 
 # 16.3.65 - TODO: ROTR (Rotate Right)
-# 16.3.66 - TODO: ROTXL (Rotate Left with CX Flag)
+
+# 16.3.66 - ROTXL (Rotate Left with CX Flag)
+:ROTXL^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b111 & sar_Rn); EAd unimpl
+:ROTXL^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b111 & sar_Imm); EAd unimpl
+
 # 16.3.67 - TODO: ROTXR (Rotate Right with CX Flag)
 # 16.3.68 - TODO: RTD (Return and Deallocate)
 
@@ -604,7 +611,6 @@ swap_S: ".W" is swap_s=0b1 { }
 :SUBS   is (op=0x44 | op=0x45 | op=0x46) unimpl
 :CMPS   is (op=0x48 | op=0x49 | op=0x4A) unimpl
 
-:ADDX   is (op=0x50 | op=0x51 | op=0x52) unimpl
 :SUBX   is (op=0x54 | op=0x55 | op=0x56) unimpl
 
 :MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
