@@ -227,6 +227,12 @@ with EA: {
     : "@" imm16 is ea_2_to_6=0b11101 & ea_si=0b10; imm16 { }
     : "@" imm32 is ea_2_to_6=0b11101 & ea_si=0b11; imm32 { }
 
+    # 7. Register indirect with scale
+    : "@("ea8b_Xm*Sf)         is ea_2_to_6=0b11110 & ea_si=0b00; ea8b_Sf & ea8b_Xm         [ Sf = 1 << ea8b_Sf; ] { }
+    : "@("simm8, ea8b_Xm*Sf)   is ea_2_to_6=0b11110 & ea_si=0b01; ea8b_Sf & ea8b_Xm; simm8  [ Sf = 1 << ea8b_Sf; ] { }
+    : "@("simm16, ea8b_Xm*Sf)  is ea_2_to_6=0b11110 & ea_si=0b10; ea8b_Sf & ea8b_Xm; simm16 [ Sf = 1 << ea8b_Sf; ] { }
+    : "@("simm32, ea8b_Xm*Sf)  is ea_2_to_6=0b11110 & ea_si=0b11; ea8b_Sf & ea8b_Xm; simm32 [ Sf = 1 << ea8b_Sf; ] { }
+
     # 8. Register indirect with index
     : "@("ea8b_Xm*Sf, ea8a_Rn)         is ead=0b1111100; ea8a_7=0 & ea8a_L & ea8a_Sd=0b00 & ea8a_Rn; ea8b_Sf & ea8b_Xm [ Sf = 1 << ea8b_Sf; ] { }
     : "@("imm8, ea8b_Xm*Sf, ea8a_Rn)   is ead=0b1111100; ea8a_7=0 & ea8a_L & ea8a_Sd=0b01 & ea8a_Rn; ea8b_Sf & ea8b_Xm; imm8 [ Sf = 1 << ea8b_Sf; ] { }
