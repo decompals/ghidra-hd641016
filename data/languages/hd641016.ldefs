@@ -3,13 +3,13 @@
   <language
     processor="HD641016"
     endian="big"
-    size="32"
+    size="16"
     variant="default"
     version="1.0"
     slafile="hd641016.sla"
     processorspec="hd641016.pspec"
     manualindexfile="../manuals/hd641016.idx"
-    id="hd641016:BE:32:default"
+    id="hd641016:BE:16:default"
   >
     <description>Hitachi HD641016</description>
     <compiler name="default" spec="hd641016.cspec" id="default" />
