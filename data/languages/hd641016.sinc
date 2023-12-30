@@ -280,7 +280,9 @@ EAd: EA is EA { export EA; }
 }
 :ADD.L imm4, Rnd_4_to_7 is (op_2_to_7=0b001100 & sz=0b10); Rnd_4_to_7 & imm4 unimpl
 
-# 16.3.5 - TODO: ADDS (Add with Sign Extension)
+# 16.3.5 - ADDS (Add with Sign Extension)
+:ADDS^Sz EAs, EAd  is op_2_to_7=0b010000 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:ADDS^Sz EAs, R0   is op_2_to_7=0b010000 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.6 - ADDX (Add with CX Flag)
 :ADDX^Sz EAs, EAd  is op_2_to_7=0b010100 & Sz; (ea_a=0 ... & EAs); EAd unimpl
@@ -394,9 +396,16 @@ EAd: EA is EA { export EA; }
 # 16.3.27 - CMP:RQ (Compare Register Quick)
 :CMP^Sz simm4, Rnd_4_to_7 is (op_2_to_7=0b001110 & Sz); Rnd_4_to_7 & simm4 unimpl
 
-# 16.3.28 - TODO: CMPS (Compare with Sign Extension)
-# 16.3.29 - TODO: DADD (Decimal ADD with CX Flag)
-# 16.3.30 - TODO: DCBN (Decrement Current Bank Number)
+# 16.3.28 - CMPS (Compare with Sign Extension)
+:CMPS^Sz EAs, EAd is op_2_to_7=0b010010 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:CMPS^Sz EAs, R0  is op_2_to_7=0b010010 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
+# 16.3.29 - DADD (Decimal ADD with CX Flag)
+:DADD EAs, EAd is op=0b10100011; (ea_a=0 ... & EAs); EAd unimpl
+:DADD EAs, R0  is op=0b10100011 & R0; (ea_a=1 ... & EAs) unimpl
+
+# 16.3.30 - DCBN (Decrement Current Bank Number)
+:DCBN is op=0b11111110 unimpl
 
 # 16.3.31 - DIVXS (Divide Extented as Signed)
 :DIVXS EAs, EAd is op=0b11101111;       (muldiv_7=0 & (muldiv_fnc=0b000 | muldiv_fnc=0b001)); (ea_a=0 ... & EAs); EAd unimpl
@@ -406,8 +415,12 @@ EAd: EA is EA { export EA; }
 :DIVXU EAs, EAd is op=0b11101111;       (muldiv_7=0 & (muldiv_fnc=0b100 | muldiv_fnc=0b101)); (ea_a=0 ... & EAs); EAd unimpl
 :DIVXU EAs, R0  is op=0b11101111 & R0;  (muldiv_7=0 & (muldiv_fnc=0b100 | muldiv_fnc=0b101)); (ea_a=1 ... & EAs) unimpl
 
-# 16.3.33 - TODO: DNEG (Decimal Negate with CX Flag)
-# 16.3.34 - TODO: DSUB (Decimal Subtract with CX Flag)
+# 16.3.33 - DNEG (Decimal Negate with CX Flag)
+:DNEG EAd is op=0b10101111; EAd unimpl
+
+# 16.3.34 - DSUB (Decimal Subtract with CX Flag)
+:DSUB EAs, EAd is op=0b10100111; (ea_a=0 ... & EAs); EAd unimpl
+:DSUB EAs, R0  is op=0b10100111 & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.35 - EXTS (Extend as Signed)
 :EXTS Rnd is (op_2_to_7=0b101111 & Sz); Rnd unimpl
@@ -416,8 +429,11 @@ EAd: EA is EA { export EA; }
 # 16.3.36 - EXTU (Extend as Unsigned)
 :EXTU^Sz Rnd is (op_2_to_7=0b101011 & Sz); Rnd unimpl
 
-# 16.3.37 - TODO: ICBN (Increment Current Bank Number)
-# 16.3.38 - TODO: JMP (Jump)
+# 16.3.37 - ICBN (Increment Current Bank Number)
+:ICBN is op=0b11111101 unimpl
+
+# 16.3.38 - JMP (Jump)
+:JMP EAd is op=0b10011011; EAd unimpl
 
 # 16.3.39 - JSR (Jump to Subroutine)
 :JSR EAd is (op=0b10101011); EAd unimpl
@@ -437,7 +453,9 @@ EAd: EA is EA { export EA; }
 :MOVA EAs, EAd  is op=0b10111111; (ea_a=0 ... & EAs); EAd unimpl
 :MOVA EAs, R0   is op=0b10111111 & R0; (ea_a=1 ... & EAs) unimpl
 
-# 16.3.44 - TODO: MOVF (Move Register 0 Fast)
+# 16.3.44 - MOVF (Move Register 0 Fast)
+:MOVF^Sz EAd is op_2_to_7=0b010111 & Sz; EAd unimpl
+
 # 16.3.45 - TODO: MOVFP (Move from Peripheral)
 
 # 16.3.46 - MOVFPE (Move from Peripheral with E Clock)
@@ -478,7 +496,8 @@ EAd: EA is EA { export EA; }
 # 16.3.56 - NEG (Negate)
 :NEG^Sz EAd is op_2_to_7=0b100011 & Sz; EAd unimpl
 
-# 16.3.57 - TODO: NEGX (Negate with CX Flag)
+# 16.3.57 - NEGX (Negate with CX Flag)
+:NEGX^Sz EAd  is op_2_to_7=0b100111 & Sz; EAd unimpl
 
 # 16.3.58 - NOP (No Operation)
 :NOP is op=0b11111111 {}
@@ -494,19 +513,26 @@ EAd: EA is EA { export EA; }
 :ORC EAs, CR  is op=0b11111001; CR; EAs unimpl
 
 # 16.3.62 - TODO: PGBN (Pull Global Bank Number)
-# 16.3.63 - TODO: RESET (Reset)
+
+# 16.3.63 - RESET (Reset)
+:RESET is op=0b11110000 unimpl
 
 # 16.3.64 - ROTL (Rotate Left)
-:ROTL^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b110 & sar_Rn); EAd unimpl
+:ROTL^Sz sar_Rn, EAd  is op_2_to_7=0b011000 & Sz; (sar_fnc=0b110 & sar_Rn); EAd unimpl
 :ROTL^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b110 & sar_Imm); EAd unimpl
 
-# 16.3.65 - TODO: ROTR (Rotate Right)
+# 16.3.65 - ROTR (Rotate Right)
+:ROTR^Sz sar_Rn, EAd  is op_2_to_7=0b011000 & Sz; (sar_fnc=0b010 & sar_Rn); EAd unimpl
+:ROTR^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b010 & sar_Imm); EAd unimpl
 
 # 16.3.66 - ROTXL (Rotate Left with CX Flag)
-:ROTXL^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b111 & sar_Rn); EAd unimpl
+:ROTXL^Sz sar_Rn, EAd  is op_2_to_7=0b011000 & Sz; (sar_fnc=0b111 & sar_Rn); EAd unimpl
 :ROTXL^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b111 & sar_Imm); EAd unimpl
 
-# 16.3.67 - TODO: ROTXR (Rotate Right with CX Flag)
+# 16.3.67 - ROTXR (Rotate Right with CX Flag)
+:ROTXR^Sz sar_Rn, EAd  is op_2_to_7=0b011000 & Sz; (sar_fnc=0b011 & sar_Rn); EAd unimpl
+:ROTXR^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b011 & sar_Imm); EAd unimpl
+
 # 16.3.68 - TODO: RTD (Return and Deallocate)
 
 # 16.3.69 - RTE (Return from Exception)
@@ -520,7 +546,8 @@ EAd: EA is EA { export EA; }
     goto [PC];
 }
 
-# 16.3.70 - TODO: RTR (Return and Restore Condition Codes)
+# 16.3.70 - RTR (Return and Restore Condition Codes)
+:RTR is op=0b11110100 unimpl
 
 # 16.3.71 - RTS (Return from Subroutine)
 :RTS    is (op=0b10111011) {
@@ -545,7 +572,8 @@ EAd: EA is EA { export EA; }
 :SHLR^Sz sar_Rn, EAd is op_2_to_7=0b011000 & Sz; (sar_fnc=0b001 & sar_Rn); EAd unimpl
 :SHLR^Sz sar_Imm, EAd is op_2_to_7=0b011001 & Sz; (sar_fnc=0b001 & sar_Imm); EAd unimpl
 
-# 16.3.79 - TODO: SLEEP (Sleep)
+# 16.3.79 - SLEEP (Sleep)
+:SLEEP is op=0b11110101 unimpl
 
 # 16.3.80 - SMOV (String Move)
 :"SMOV/F"^Sz Rns, Rnd, string_Rnc is (op_2_to_7=0b100101 & Sz); (string_7=0 & string_TYP=0b010 & string_Rnc); (Rns & Rnd) unimpl
@@ -573,15 +601,22 @@ EAd: EA is EA { export EA; }
 # 16.3.87 - SUB:RQ (Subtract Register Quick)
 :SUB^Sz imm4, Rnd_4_to_7 is (op_2_to_7=0b001101 & Sz); Rnd_4_to_7 & imm4 unimpl
 
-# 16.3.88 - TODO: SUBS (Subtract with Sign Extension)
-# 16.3.89 - TODO: SUBX (Subtract with CX Flag)
+# 16.3.88 - SUBS (Subtract with Sign Extension)
+:SUBS^Sz EAs, EAd is op_2_to_7=0b010001 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:SUBS^Sz EAs, R0  is op_2_to_7=0b010001 & Sz & R0; (ea_a=1 ... & EAs) unimpl
+
+# 16.3.89 - SUBX (Subtract with CX Flag)
+:SUBX^Sz EAs, EAd is op_2_to_7=0b010101 & Sz; (ea_a=0 ... & EAs); EAd unimpl
+:SUBX^Sz EAs, R0  is op_2_to_7=0b010101 & Sz & R0; (ea_a=1 ... & EAs) unimpl
 
 # 16.3.90 - SWAP (Swap Register Halves)
 swap_S: ".B" is swap_s=0b0 { }
 swap_S: ".W" is swap_s=0b1 { }
 :SWAP^swap_S EAd is op_1_to_7=0b1110101 & swap_S; EAd unimpl
 
-# 16.3.91 - TODO: TAS (Test and Set)
+# 16.3.91 - TAS (Test and Set)
+:TAS EAd is op=0b11101110; EAd unimpl
+
 # 16.3.92 - TODO: TRAP (Trap According to Condition Codes)
 
 # 16.3.93 - TRAPA (Trap Always)
@@ -607,27 +642,8 @@ swap_S: ".W" is swap_s=0b1 { }
 # 16.3.98 - TODO: XORC (Exclusive OR Control Register)
 
 @if defined(INCLUDE_TEMPS)
-:ADDS   is (op=0x40 | op=0x41 | op=0x42) unimpl
-:SUBS   is (op=0x44 | op=0x45 | op=0x46) unimpl
-:CMPS   is (op=0x48 | op=0x49 | op=0x4A) unimpl
-
-:SUBX   is (op=0x54 | op=0x55 | op=0x56) unimpl
-
-:MOVF   is (op=0x5C | op=0x5D | op=0x5E) unimpl
-
 :BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
-:MOVFPW is (op=0x7C | op=0x7D | op=0x7E) unimpl
 
-:NEG    is (op=0x8C | op=0x8D | op=0x8E) unimpl
-
-:JMP    is (op=0x9B) unimpl
-:NEGX   is (op=0x9C | op=0x9D | op=0x9E) unimpl
-
-:DADD   is (op=0xA3) unimpl
-
-:DSUB   is (op=0xA7) unimpl
-
-:DNEG   is (op=0xAF) unimpl
 :SET    is (op=0xB7) unimpl
 :RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
 
@@ -638,18 +654,12 @@ swap_S: ".W" is swap_s=0b1 { }
 
 :MOVTP  is (op=0xE0 | op=0xE1) unimpl
 :MOVFP  is (op=0xE2 | op=0xE3) unimpl
+
 :CGBN   is (op=0xE4 | op=0xE5 | op=0xE6 | op=0xE7) unimpl
 :PGBN   is (op=0xE8 | op=0xE9) unimpl
-:TAS    is (op=0xEC) unimpl
-
-:RESET  is op=0xF0 unimpl
 
 :TRAP   is op=0xF3 unimpl
-:RTR    is op=0xF4 unimpl
-:SLEEP  is op=0xF5 unimpl
 # F6
 # F7
 :XORC   is op=0xFA unimpl
-:ICBN   is op=0xFD unimpl
-:DCBN   is op=0xFE unimpl
 @endif
