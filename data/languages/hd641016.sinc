@@ -662,8 +662,6 @@ swap_S: ".W" is swap_s=0b1 { }
 # 16.3.98 - TODO: XORC (Exclusive OR Control Register)
 
 @if defined(INCLUDE_TEMPS)
-:BIT    is (op=0x67 | op=0x69 | op=0x6A | op=0x6C | op=0x6D | op=0x6E) unimpl
-
 :SET    is (op=0xB7) unimpl
 :RTD    is (op=0xB8 | op=0xB9 | op=0xBA) unimpl
 
